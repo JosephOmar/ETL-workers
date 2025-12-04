@@ -1,0 +1,9 @@
+
+# environment variables
+.env.dev
+.env.prod
+
+alembic/__pycache__/
+__pycache__/
+*.pyc
+.venv/
