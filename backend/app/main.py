@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Depends
-from app.routers import workers
+from app.routers import workers, schedules, attendance
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.database import get_session
 from app.database.migrate import run_migrations
 from contextlib import asynccontextmanager
 from typing import Annotated
-from sqlmodel import Session
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 
 @asynccontextmanager
@@ -34,5 +34,7 @@ app.add_middleware(
 )
 
 app.include_router(workers.router)
+app.include_router(schedules.router)
+app.include_router(attendance.router)
 
-SessionDep = Annotated[Session, Depends(get_session)]
+SessionDep = Annotated[AsyncSession, Depends(get_session)]

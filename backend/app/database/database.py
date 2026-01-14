@@ -2,6 +2,8 @@ from sqlmodel import create_engine, Session
 from typing import Generator
 from dotenv import load_dotenv
 import os
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
 
 load_dotenv('.env', override=True)
 
@@ -16,8 +18,13 @@ DATABASE_URL = (
     f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 )
 
-engine = create_engine(DATABASE_URL, echo=False)
+engine = create_async_engine(
+    DATABASE_URL.replace("postgresql+psycopg2://", "postgresql+asyncpg://"),
+    echo=False,
+    future=True
+)
 
-def get_session() -> Generator[Session, None, None]:
-    with Session(engine) as session:
+async def get_session():
+    async with AsyncSession(engine) as session:
         yield session
+

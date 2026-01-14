@@ -4,7 +4,9 @@ WORKERS_MAPPING = {
     "people_active":      "people_active",
     "people_inactive":    "people_inactive",
     "scheduling_ppp":     "scheduling_ppp",
+    "scheduling_ubycall": "scheduling_ubycall",
     "api_id":             "api_id",
+    "master_glovo":       "master_glovo"
 }
 
 def validate_excel_workers(file_name: str) -> str:

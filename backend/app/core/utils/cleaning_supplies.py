@@ -43,5 +43,10 @@ def update_column_based_on_worker(
 
 def clean_observations(valor):
     if pd.isna(valor) or valor in [0,"0","nan",None]:
-        return ""
+        return None
+    return valor
+
+def clean_productive(valor):
+    if pd.isna(valor) or valor in [0,"0","nan", None]:
+        return "No"
     return valor

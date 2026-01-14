@@ -8,7 +8,6 @@ COLUMNS_SCHEDULING_PPP = {
     "Observaciones 1°": OBSERVATION_1,
     "Observaciones 2°": OBSERVATION_2,
     "ID" : REQUIREMENT_ID,
-    "SUPERVISOR" : SUPERVISOR,
     "Productivo": PRODUCTIVE
 }
 
@@ -19,9 +18,6 @@ def clean_scheduling_ppp(data: pd.DataFrame) -> pd.DataFrame:
     data.columns = data.columns.str.strip()
 
     data = data.rename(columns=COLUMNS_SCHEDULING_PPP)
-
-    data[OBSERVATION_1] = data[OBSERVATION_1].astype(str).str.strip().apply(clean_observations)
-    data[OBSERVATION_2] = data[OBSERVATION_2].astype(str).str.strip().apply(clean_observations)
 
     data = data[list(COLUMNS_SCHEDULING_PPP.values())]
 
