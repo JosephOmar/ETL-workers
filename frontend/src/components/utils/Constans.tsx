@@ -25,3 +25,8 @@ export const ATTENDANCE_OPTIONS = [
   { label: "Late", value: "Late"},
   { label: "Absent", value: "Absent"}
 ]
+
+export const ROLE_OPTIONS = [
+  { label: "Agent", value: "Agent"},
+  { label: "Supervisor", value: "Supervisor"}
+]

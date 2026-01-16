@@ -1,17 +1,17 @@
 import type { ZoneType } from "@/components/types/table-column";
 import type { Schedule } from "@/components/types/schedule.type";
 import { toDateTime } from "@/components/utils/UtilsForTime";
+import type { Attendance } from "@/components/types/attendance.type";
 
 export const getEvaluationDateTime = (
   filterDate: string,
-  filterTimeRange: string[]
+  filterTime: string | null
 ): Date | null => {
-  if (!filterDate || filterTimeRange.length === 0) return null;
+  if (!filterDate || !filterTime) return null;
 
-  const time = filterTimeRange[0];
-
-  return new Date(`${filterDate}T${time}:00`);
+  return new Date(`${filterDate}T${filterTime}:00`);
 };
+
 
 export const isAgentWorkingAt =
   (dateTime: Date, filterZone: ZoneType) =>
@@ -28,3 +28,29 @@ export const isAgentWorkingAt =
 
     return dateTime >= start && dateTime <= end;
   };
+
+
+export const getAttendanceByDate = (
+  schedules: Schedule[] | undefined,
+  filterDate: string
+): {
+  schedule?: Schedule;
+  attendance?: Attendance;
+} => {
+  if (!schedules?.length) {
+    return {};
+  }
+
+  const schedule = schedules.find(
+    s => s.start_date_pe === filterDate
+  );
+
+  if (!schedule || !schedule.attendances?.length) {
+    return { schedule };
+  }
+
+  return {
+    schedule,
+    attendance: schedule.attendances[0],
+  };
+};

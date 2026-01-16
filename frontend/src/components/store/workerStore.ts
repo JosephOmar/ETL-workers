@@ -26,7 +26,10 @@ interface WorkersState {
   filterAttendance: string[];
   searchText: string;
   searchField: SearchField;
-  filterTimeRange: string[];
+  filterTimeRange: string | null;
+  filterRole: string[];
+  filterAdherenceBelow: boolean;
+  filterProductive: boolean;
 
   fetchWorkers: (forceRefresh?: boolean) => Promise<void>;
 
@@ -37,7 +40,10 @@ interface WorkersState {
   setFilterAttendance: (attendance: string[]) => void;
   setSearchText: (text: string) => void;
   setSearchField: (field: SearchField) => void;
-  setFilterTimeRange: (time: string) => void;
+  setFilterTimeRange: (time: string | null) => void;
+  setFilterRole: (roles: string[]) => void;
+  setFilterAdherenceBelow: (value: boolean) => void;
+  setFilterProductive: (value: boolean) => void;
 
   clearTimeRange: () => void;
   resetFilters: () => void;
@@ -48,14 +54,17 @@ export const useWorkersStore = create<WorkersState>((set, get) => ({
   loading: false,
   error: null,
 
-  filterDate: "", // new Date().toISOString().slice(0, 10)
+  filterDate: new Date().toISOString().slice(0, 10),
   filterZone: "PE",
-  filterTeams: [],
-  filterContract: [],
+  filterTeams: ALL_TEAMS,
+  filterContract: ["Part Time", "Full Time"],
   filterAttendance: [],
   searchText: "",
   searchField: "email",
-  filterTimeRange: [],
+  filterTimeRange: "",
+  filterRole: ["Agent"],
+  filterAdherenceBelow: false,
+  filterProductive: true,
 
   setFilterDate: (date) => set({ filterDate: date }),
   setFilterZone: (zone) => set({ filterZone: zone }),
@@ -92,25 +101,27 @@ export const useWorkersStore = create<WorkersState>((set, get) => ({
   setSearchText: (text) => set({ searchText: text }),
   setSearchField: (field) => set({ searchField: field }),
 
-  setFilterTimeRange: (time) =>
-    set((state) => {
-      const current = state.filterTimeRange;
+  setFilterTimeRange: (time: string | null) =>
+    set(() => ({filterTimeRange: time})),
 
-      if (current.includes(time)) {
-        return { filterTimeRange: current.filter(t => t !== time) };
-      }
+  clearTimeRange: () => set({ filterTimeRange: null }),
 
-      if (current.length < 2) {
-        return { filterTimeRange: [...current, time].sort() };
-      }
+  setFilterRole: (role) =>  {
 
-      return {
-        filterTimeRange: [current[1], time].sort(),
-      };
-  }),
+    if (role.includes("Supervisor")) {
+      set({ filterRole: ['Supervisor', 'Apoyo Tl', 'Apoyo Tl Uby'] });
+      return;
+    }
 
-clearTimeRange: () => set({ filterTimeRange: [] }),
+    if (role.length === 0) {
+      set({ filterRole: []})
+      return;
+    }
 
+    set({ filterRole: role})
+  },
+  setFilterAdherenceBelow: (value) => set({ filterAdherenceBelow: value }),
+  setFilterProductive: (value) => set({ filterProductive: value }),
   resetFilters: () =>
     set({
       filterDate: "",

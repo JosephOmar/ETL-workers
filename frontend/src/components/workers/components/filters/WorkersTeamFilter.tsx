@@ -13,7 +13,7 @@ const WorkersTeamFilter = () => {
       onChange={setFilterTeams}
       options={TEAM_OPTIONS}
       multiple
-      className="min-h-[130px]"
+      className=""
     />
   );
 };

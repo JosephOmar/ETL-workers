@@ -1,3 +1,5 @@
+import type { Attendance } from "./attendance.type";
+
 export interface Schedule {
     start_date_pe: string;
     end_date_pe: string;
@@ -17,4 +19,5 @@ export interface Schedule {
     break_end_time_es: string;
     is_rest_day: boolean;
     obs: string;
+    attendances: Attendance[];
 }

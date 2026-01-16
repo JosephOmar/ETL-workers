@@ -10,7 +10,7 @@ export const ClearFiltersButton = () => {
       variant="outline"
       className="btn-grad"
     >
-      Limpiar filtros
+      Clean Filters
     </Button>
   );
 };

@@ -2,10 +2,8 @@ import type { Worker } from "@/components/types/worker.type";
 import type { Schedule } from "@/components/types/schedule.type";
 import type { Attendance } from "@/components/types/attendance.type";
 import type { Column, ZoneType } from "@/components/types/table-column";
-import { timeToMinutes } from "@/components/utils/UtilsForTime";
-import { toDateTime } from "@/components/utils/UtilsForTime";
-import { getEvaluationDateTime } from "./getEvaluationDateTime";
-import { useWorkersStore } from "@/components/store/workerStore";
+
+import { timeToMinutes, toDateTime } from "@/components/utils/UtilsForTime";
 import { isAgentWorkingAt } from "./getEvaluationDateTime";
 
 interface Props {
@@ -14,61 +12,52 @@ interface Props {
   evaluationDateTime: Date | null;
 }
 
+export const getAttendanceFromSchedule = (
+    schedule?: Schedule,
+    filterZone?: ZoneType
+  ): Attendance | undefined => {
+    if (!schedule || !schedule.attendances?.length) return undefined;
+
+    const scheduleDate =
+      filterZone === "PE"
+        ? schedule.start_date_pe
+        : schedule.start_date_es;
+
+    return schedule.attendances.find(
+      (a) => a.date === scheduleDate
+    );
+  };
+
 export const WorkersTableColumns = ({
   filterDate,
   filterZone,
-  evaluationDateTime
+  evaluationDateTime,
 }: Props): Column<Worker>[] => {
-  const getScheduleOfDay = (worker: Worker): Schedule | undefined => {
-    return worker.schedules.find((s) =>
+
+  /* =========================
+     Helpers
+  ========================== */
+
+  const getScheduleOfDay = (worker: Worker): Schedule | undefined =>
+    worker.schedules.find((s) =>
       filterZone === "PE"
         ? s.start_date_pe === filterDate
         : s.start_date_es === filterDate
     );
-  };
 
   const getScheduleAtDateTime = (
-    w: Worker,
-    dateTime: Date,
-    filterZone: ZoneType
-  ) => {
-    return w.schedules.find((s) => {
-      const start = toDateTime(
-        filterZone === "PE" ? s.start_date_pe : s.start_date_es,
-        filterZone === "PE" ? s.start_time_pe : s.start_time_es
-      );
-
-      const end = toDateTime(
-        filterZone === "PE" ? s.end_date_pe : s.end_date_es,
-        filterZone === "PE" ? s.end_time_pe : s.end_time_es
-      );
-
-      return dateTime >= start && dateTime <= end;
-    });
-  };
-
-  const getAttendanceOfDay = (worker: Worker): Attendance | undefined => {
-    return worker.attendances.find((a) => 
-      a.date === filterDate
-    )
-  }
-
-  const getAttendanceAtDateTime = (
     worker: Worker,
-    dateTime: Date,
-    filterZone: ZoneType
-  ): Attendance | undefined => {
-    const schedule = worker.schedules.find((s) =>
-      isAgentWorkingAt(dateTime, filterZone)(s)
+    dateTime: Date
+  ): Schedule | undefined =>
+    worker.schedules.find(
+      isAgentWorkingAt(dateTime, filterZone)
     );
 
-    if (!schedule) return undefined;
 
-    const startDate =
-      filterZone === "PE" ? schedule.start_date_pe : schedule.start_date_es;
 
-    return worker.attendances.find((a) => a.date === startDate);
-  };
+  /* =========================
+     Columns
+  ========================== */
 
   return [
     {
@@ -113,139 +102,172 @@ export const WorkersTableColumns = ({
         );
       },
       render: (w) => {
-        const s = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime, filterZone)
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
           : getScheduleOfDay(w);
 
-        if (!s) return "-";
-
-        if (!evaluationDateTime && s.is_rest_day) return "Descanso";
+        if (!schedule) return "-";
+        if (!evaluationDateTime && schedule.is_rest_day) return "Descanso";
 
         return filterZone === "PE"
-          ? `${s.start_time_pe?.slice(0, 5)} - ${s.end_time_pe?.slice(0, 5)}`
-          : `${s.start_time_es?.slice(0, 5)} - ${s.end_time_es?.slice(0, 5)}`;
+          ? `${schedule.start_time_pe?.slice(0, 5)} - ${schedule.end_time_pe?.slice(0, 5)}`
+          : `${schedule.start_time_es?.slice(0, 5)} - ${schedule.end_time_es?.slice(0, 5)}`;
       },
     },
     {
-        key: "break",
-        header: "Break",
-        sortable: true,
-        sortValue: (w) => {
-        const s = getScheduleOfDay(w);
-        return timeToMinutes(
-            filterZone === "PE"
-            ? s?.break_start_time_pe
-            : s?.break_start_time_es
-        );
-        },
-        render: (w) => {
-          const s = evaluationDateTime
-            ? getScheduleAtDateTime(w, evaluationDateTime, filterZone)
-            : getScheduleOfDay(w);
+      key: "break",
+      header: "Break",
+      sortable: true,
+      sortValue: (w) => {
+        const s = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
 
-          if (!s) return "-";
+        if (
+          !s ||
+          s.is_rest_day ||
+          w.role?.name !== "Agent" ||
+          ["Part Time", "Ubycall"].includes(w.contract_type?.name ?? "")
+        ) {
+          return 0; // Si no hay break, lo ordenamos al inicio
+        }
 
-          if (
-            w.contract_type?.name === "Part Time" ||
-            w.contract_type?.name === "Ubycall" ||
-            s.is_rest_day ||
-            w.role?.name !== "Agent"
-          ) {
-            return "-";
-          }
+        const start =
+          filterZone === "PE" ? s.break_start_time_pe : s.break_start_time_es;
 
-          const start =
-            filterZone === "PE"
-              ? s.break_start_time_pe
-              : s.break_start_time_es;
+        return start ? timeToMinutes(start) : 0;
+      },
+      render: (w) => {
+        const s = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
 
-          const end =
-            filterZone === "PE"
-              ? s.break_end_time_pe
-              : s.break_end_time_es;
+        if (
+          !s ||
+          s.is_rest_day ||
+          w.role?.name !== "Agent" ||
+          ["Part Time", "Ubycall"].includes(w.contract_type?.name ?? "")
+        ) {
+          return "-";
+        }
 
-          if (!start || !end) return "-";
+        const start =
+          filterZone === "PE" ? s.break_start_time_pe : s.break_start_time_es;
+        const end =
+          filterZone === "PE" ? s.break_end_time_pe : s.break_end_time_es;
 
-          return `${start.slice(0, 5)} - ${end.slice(0, 5)}`;
-        },
+        return start && end ? `${start.slice(0, 5)} - ${end.slice(0, 5)}` : "-";
+      },
+    },
+    {
+      key: "obs",
+      header: "Obs",
+      render: (w) => {
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
+
+
+        return schedule?.obs ?? ''
+      },
     },
     {
       key: "attendance",
       header: "Attendance",
       render: (w) => {
-        if (evaluationDateTime) {
-          const attendance = getAttendanceAtDateTime(w, evaluationDateTime, filterZone);
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
 
-          return attendance?.status || "Absent";
-        }
+        const attendance = getAttendanceFromSchedule(schedule, filterZone);
+        const status = attendance?.status || "Absent";
 
-        const a = getAttendanceOfDay(w);
-        return a?.status || "Absent";
+        const statusClass = (() => {
+          switch (status) {
+            case "Present":
+              return "text-green-500 font-semibold";
+            case "Late":
+              return "text-orange-500 font-semibold";
+            case "Absent":
+              return "text-red-500 font-semibold";
+            default:
+              return "";
+          }
+        })();
+
+        return <span className={statusClass}>{status}</span>;
       },
     },
     {
       key: "checkIn",
       header: "Check In",
       render: (w) => {
-        if (evaluationDateTime) {
-          const attendance = getAttendanceAtDateTime(w, evaluationDateTime, filterZone);
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
 
-          return attendance?.check_in || "-";
-        }
-
-        const a = getAttendanceOfDay(w);
-        return a?.check_in || "-";
+        return getAttendanceFromSchedule(schedule, filterZone)?.check_in || "-";
       },
     },
     {
       key: "checkOut",
       header: "Check Out",
       render: (w) => {
-        if (evaluationDateTime) {
-          const attendance = getAttendanceAtDateTime(w, evaluationDateTime, filterZone);
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
 
-          return attendance?.check_out || "-";
-        }
-
-        const a = getAttendanceOfDay(w);
-        return a?.check_out || "-";
+        return getAttendanceFromSchedule(schedule, filterZone)?.check_out || "-";
       },
     },
     {
       key: "adherence",
       header: "Adherence",
+      sortable: true,
+      sortValue: (w) => {
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
+
+        const a = getAttendanceFromSchedule(schedule, filterZone);
+        return a?.adherence != null ? a.adherence * 100 : 0;
+      },
       render: (w) => {
-        if (evaluationDateTime) {
-          const attendance = getAttendanceAtDateTime(
-            w,
-            evaluationDateTime,
-            filterZone
-          );
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
 
-          return attendance?.adherence != null
-            ? `${(attendance.adherence * 100).toFixed(0)}%`
-            : "-";
-        }
+        const a = getAttendanceFromSchedule(schedule, filterZone);
+        const adherence = a?.adherence != null ? parseInt((a.adherence * 100).toFixed(0)) : 0;
 
-        const a = getAttendanceOfDay(w);
+        const adherenceClass = adherence < 86 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
 
-        return a?.adherence != null
-          ? `${(a.adherence * 100).toFixed(0)}%`
-          : "-";
+        return <span className={adherenceClass}>{adherence}%</span>;
       },
     },
     {
-      key: "auxNonProductive",
+      key: "auxNoProductive",
       header: "Aux No Productive",
+      sortable: true,
+      sortValue: (w) => {
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
+
+        const a = getAttendanceFromSchedule(schedule, filterZone);
+        return a?.time_aux_no_productive ?? 0;
+      },
       render: (w) => {
-        if (evaluationDateTime) {
-          const attendance = getAttendanceAtDateTime(w, evaluationDateTime, filterZone);
+        const schedule = evaluationDateTime
+          ? getScheduleAtDateTime(w, evaluationDateTime)
+          : getScheduleOfDay(w);
 
-          return attendance?.time_aux_non_productive || "-";
-        }
+        const a = getAttendanceFromSchedule(schedule, filterZone)
+        const aux_no_productive =  a?.time_aux_no_productive || 0;
 
-        const a = getAttendanceOfDay(w);
-        return a?.time_aux_non_productive || "-";
+        const auxClass = aux_no_productive > 20 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
+
+        return <span className={auxClass}>{aux_no_productive}</span>;
       },
     },
     {

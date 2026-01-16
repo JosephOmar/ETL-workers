@@ -7,22 +7,22 @@ const slots = generateHalfHourSlots();
 const WorkersTimeRangeFilter = () => {
   const selected = useWorkersStore(s => s.filterTimeRange);
   const setTime = useWorkersStore(s => s.setFilterTimeRange);
-  console.log(selected)
+
   return (
-    <div>
+    <div className="col-span-2">
       <label className="block mb-2 font-medium">
-        Filter by Time Range
+        Filter by Time
       </label>
 
-      <div className="grid grid-cols-6 gap-2 max-h-64 overflow-y-auto">
+      <div className="grid grid-cols-10 gap-2">
         {slots.map(time => {
-          const isActive = selected.includes(time);
+          const isActive = selected === time;
 
           return (
             <button
               key={time}
               type="button"
-              onClick={() => setTime(time)}
+              onClick={() => setTime(isActive ? null : time)}
               className={clsx(
                 "text-sm px-2 py-1 rounded border",
                 isActive
@@ -36,9 +36,9 @@ const WorkersTimeRangeFilter = () => {
         })}
       </div>
 
-      {selected.length > 0 && (
+      {selected && (
         <p className="mt-2 text-sm text-gray-600">
-          Selected: {selected.join(" → ")}
+          Selected: {selected}
         </p>
       )}
     </div>

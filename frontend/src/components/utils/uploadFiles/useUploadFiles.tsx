@@ -12,6 +12,7 @@ export interface UseUploadFilesProps {
   backendUrl: string;
   endpoint: string;
   fields: UploadField[];
+  targetDate?: string;
   onAfterUpload?: () => void;
 }
 
@@ -19,6 +20,7 @@ export function useUploadFiles({
   backendUrl,
   endpoint,
   fields,
+  targetDate,
   onAfterUpload,
 }: UseUploadFilesProps) {
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,10 @@ export function useUploadFiles({
           formData.append("files", files[f.key]!);
         }
       });
+
+      if (targetDate) {
+        formData.append("target_date", targetDate);
+      }
 
       const res = await fetch(`${backendUrl}${endpoint}`, {
         method: "POST",

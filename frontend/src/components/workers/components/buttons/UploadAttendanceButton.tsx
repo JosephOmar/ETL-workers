@@ -16,6 +16,7 @@ export function UploadAttendanceButton({
       fields={[
         { key: "attendance", label: "attendance" },
       ]}
+      withTargetDate
       onAfterUpload={onAfterUpload}
     />
   );

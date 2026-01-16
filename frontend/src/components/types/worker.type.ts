@@ -50,5 +50,4 @@ export interface Worker {
     trainee: string;
     productive: string;
     schedules: Schedule[];
-    attendances: Attendance[];
 }

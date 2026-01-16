@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 import { FileDropzone } from "./FileDropZone";
 import { useUploadFiles, type UploadField } from "./useUploadFiles";
@@ -22,6 +23,7 @@ interface UploadFilesDialogProps {
   buttonText: string;
   submitText?: string;
   fields: UploadField[];
+  withTargetDate?: boolean;
   onAfterUpload?: () => void;
 }
 
@@ -33,18 +35,27 @@ export function UploadFilesDialog({
   buttonText,
   submitText = "Subir archivos",
   fields,
+  withTargetDate,
   onAfterUpload,
 }: UploadFilesDialogProps) {
   const [open, setOpen] = useState(false);
-
+  const [targetDate, setTargetDate] = useState<string | null>(null);
   const { files, setFile, upload, loading } = useUploadFiles({
     backendUrl,
     endpoint,
     fields,
+    targetDate: withTargetDate ? targetDate ?? undefined : undefined,
     onAfterUpload,
   });
 
   const handleSubmit = async () => {
+    if (withTargetDate && !targetDate) {
+      toast.error("Date required", {
+        description: "You must select a date before uploading attendance",
+      });
+      return;
+    }
+
     const success = await upload();
     if (success) setOpen(false);
   };
@@ -72,7 +83,17 @@ export function UploadFilesDialog({
               />
             ))}
           </div>
-
+          {withTargetDate && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Select Date</label>
+              <input
+                type="date"
+                value={targetDate ?? ""}
+                onChange={(e) => setTargetDate(e.target.value)}
+                className="w-full rounded border px-3 py-2"
+              />
+            </div>
+          )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancelar

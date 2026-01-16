@@ -25,6 +25,11 @@ import { WorkersStatus } from "./components/ui/WorkersStatus";
 import { ClearFiltersButton } from "./components/filters/ClearFiltersButton";
 import WorkersTimeRangeFilter from "./components/filters/WorkersTimeRangeFilter";
 import { getEvaluationDateTime } from "./components/utils/getEvaluationDateTime";
+import WorkersRoleFilter from "./components/filters/WorkersRoleFilter";
+import WorkersAdherenceFilter from "./components/filters/WorkersAdherenceFilter";
+import WorkersProductiveFilter from "./components/filters/WorkersProductiveFilter";
+import { copyWorkersAttendance } from "./components/buttonsCopy/copyWorkersAttendance";
+import { copyWorkersSchedules } from "./components/buttonsCopy/copyWorkersSchedules";
 
 const WorkersTable: React.FC = () => {
   const loading = useWorkersStore((s) => s.loading);
@@ -70,12 +75,23 @@ const WorkersTable: React.FC = () => {
           <WorkersContractFilter />
           <WorkersAttendanceFilter />
         </div>
+        <div className="flex flex-col gap-4">
+          <WorkersRoleFilter />
+          <WorkersAdherenceFilter />
+          <WorkersProductiveFilter />
+        </div>
         <WorkersBulkSearch />
-        <WorkersTimeRangeFilter />
+        <WorkersTimeRangeFilter/>
       </div>
       <div className="flex gap-4">
-        <h2 className="text-2xl font-bold mb-4">Workers List - {currentWorkers.length}</h2>
+        <h2 className="text-2xl font-bold mb-4">Workers List - {workers.length}</h2>
         <ClearFiltersButton />
+        <Button className="btn-grad text-black" onClick={() => copyWorkersAttendance(workers, filterDate)}>
+          Copy Attendance
+        </Button>
+        <Button className="btn-grad text-black" onClick={() => copyWorkersSchedules(workers, filterDate)}>
+          Copy Schedules
+        </Button>
       </div>
       <table className=" min-w-full bg-white shadow-md rounded-lg overflow-hidden">
         <TableHeader columns={columns} sortKey={sortKey} sortDirection={sortDirection} onSort={onSort}/>
