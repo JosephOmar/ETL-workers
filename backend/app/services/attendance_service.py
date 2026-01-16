@@ -21,6 +21,8 @@ def intersect_minutes(a_start, a_end, b_start, b_end) -> int:
         return 0
     return int((end - start).total_seconds() / 60)
 
+TZ = ZoneInfo("America/Lima")
+
 async def process_and_persist_attendance(
     files: List[UploadFile],
     session: AsyncSession,
@@ -38,7 +40,7 @@ async def process_and_persist_attendance(
         enriched_rows = await get_workers_and_schedule_for_attendance(session,df)
 
         records = []
-        now = datetime.now(ZoneInfo("America/Lima"))
+        now = datetime.now(TZ)
         print(enriched_rows[0])
         for row in enriched_rows:
 
@@ -62,11 +64,14 @@ async def process_and_persist_attendance(
                 # -----------------------------
                 start_dt = datetime.combine(
                     schedule.start_date_pe,
-                    schedule.start_time_pe
+                    schedule.start_time_pe,
+                    tzinfo=TZ
                 )
+                
                 end_dt = datetime.combine(
                     schedule.end_date_pe,
-                    schedule.end_time_pe
+                    schedule.end_time_pe,
+                    tzinfo=TZ
                 )
 
                 if end_dt <= start_dt:
@@ -82,11 +87,14 @@ async def process_and_persist_attendance(
                 ):
                     break_start_dt = datetime.combine(
                         schedule.break_start_date_pe,
-                        schedule.break_start_time_pe
+                        schedule.break_start_time_pe,
+                        tzinfo=TZ
                     )
+                    
                     break_end_dt = datetime.combine(
                         schedule.break_end_date_pe,
-                        schedule.break_end_time_pe
+                        schedule.break_end_time_pe,
+                        tzinfo=TZ
                     )
                     time_break = intersect_minutes(
                         break_start_dt, break_end_dt,
@@ -120,6 +128,8 @@ async def process_and_persist_attendance(
                 # -----------------------------
                 for e in events:
                     ev_start = e["start"]
+                    if ev_start.tzinfo is None:
+                        ev_start = ev_start.replace(tzinfo=TZ)
                     ev_end = ev_start + timedelta(minutes=e["minutes"])
                     ev_type = e["type"]
 
