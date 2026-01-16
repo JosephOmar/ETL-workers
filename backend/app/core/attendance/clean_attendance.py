@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import date
 from typing import List, Tuple
-from app.core.utils.columns_names import TIME_ONLINE, TIME_PRODUCTIVE, TIME_NON_PRODUCTIVE, TIME_OFFLINE, START_DATE_PE, START_TIME_PE, API_EMAIL
+from app.core.utils.columns_names import TIME_ONLINE, TIME_PRODUCTIVE, TIME_NO_PRODUCTIVE, TIME_OFFLINE, START_DATE_PE, START_TIME_PE, API_EMAIL
 
 def extract_times(
     df: pd.DataFrame,
@@ -19,17 +19,31 @@ def extract_times(
 
     return list(
         zip(
-            subset.loc[mask, start_col].dt.time,
+            subset.loc[mask, start_col],
             durations
         )
     )
 
-def clean_attendance(data: pd.DataFrame, target_date: pd.Timestamp | None = None) -> pd.DataFrame:
+def build_events(
+    times: List[Tuple[pd.Timestamp, float]],
+    event_type: str
+) -> List[dict]:
+    return [
+        {
+            "start": start.to_pydatetime(),
+            "minutes": int(round(minutes)),
+            "type": event_type
+        }
+        for start, minutes in times
+        if minutes > 0
+    ]
 
-    if target_date is None:
-        target_date = pd.Timestamp.today().normalize()
+def clean_attendance(data: pd.DataFrame) -> pd.DataFrame:
 
-    target_date = pd.Timestamp(target_date).date()
+    # if target_date is None:
+    #     target_date = pd.Timestamp.today().normalize()
+
+    # target_date = pd.Timestamp(target_date).date()
 
     data = data[data['Platform'] == 'api']
 
@@ -42,26 +56,45 @@ def clean_attendance(data: pd.DataFrame, target_date: pd.Timestamp | None = None
 
     data['End Time'] = pd.to_datetime(data['End Time'], format="%Y-%m-%d %H:%M:%S", errors='coerce')
 
-    data = data[data['Start Time'].dt.date == target_date]
+    # start_window = pd.Timestamp(target_date) - pd.Timedelta(hours=24)
+    # end_window   = pd.Timestamp(target_date) + pd.Timedelta(hours=24)
+
+    # data = data[
+    #     (data['Start Time'] >= start_window) &
+    #     (data['Start Time'] <= end_window)
+    # ]
 
     results = []
     for agent, group in data.groupby(API_EMAIL):
 
-        check_in_group = extract_times(group, valid_states=TIME_ONLINE + TIME_PRODUCTIVE)
-        check_out_group = extract_times(group, valid_states=TIME_OFFLINE)
-        time_productive_group = extract_times(group, valid_states=TIME_PRODUCTIVE)
-        time_non_productive_group = extract_times(group, valid_states=TIME_NON_PRODUCTIVE)
+        events = []
 
-        if not check_in_group and not check_out_group:
+        events += build_events(
+            extract_times(group, TIME_ONLINE),
+            "ONLINE"
+        )
+
+        events += build_events(
+            extract_times(group, TIME_PRODUCTIVE),
+            "AUX_PRODUCTIVE"
+        )
+
+        events += build_events(
+            extract_times(group, TIME_NO_PRODUCTIVE),
+            "AUX_NO_PRODUCTIVE"
+        )
+
+        events += build_events(
+            extract_times(group, TIME_OFFLINE),
+            "OFFLINE"
+        )
+
+        if not events:
             continue
 
         results.append({
             API_EMAIL: agent,
-            'date': target_date,
-            'check_in_group': check_in_group,
-            'check_out_group': check_out_group,
-            "time_productive_group" : time_productive_group,
-            'time_non_productive_group': time_non_productive_group,
+            "events": sorted(events, key=lambda e: e["start"])
         })
-
-    return pd.DataFrame(results) 
+    print(pd.DataFrame(results).head(10))
+    return pd.DataFrame(results)

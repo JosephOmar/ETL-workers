@@ -76,6 +76,17 @@ def generate_workers(
     df_master_concentrix = df_master_concentrix.rename(columns={'DNI': DOCUMENT, 'ASIGNACIÓN INTERNA': SUPERVISOR})
     df_master_concentrix = df_master_concentrix[[DOCUMENT, SUPERVISOR]]
 
+    SUPERVISOR_VALUES = ['APOYO TL UBY', 'APOYO TL']
+    df_master_backup = master_glovo['backup']
+    df_master_backup = df_master_backup.rename(columns={'DNI': DOCUMENT, 'ASIGNACIÓN INTERNA': ROLE})
+    df_master_backup = df_master_backup[[DOCUMENT, ROLE]]
+    df_master_backup = df_master_backup[df_master_backup[ROLE].isin(SUPERVISOR_VALUES)]
+
+    df_master_supervisor = master_glovo['supervisor']
+    df_master_supervisor = df_master_supervisor.rename(columns={'DNI': DOCUMENT, 'CARGO PEOPLE': ROLE})
+    df_master_supervisor[ROLE] = 'Supervisor'
+    df_master_supervisor = df_master_supervisor[[DOCUMENT, ROLE]]
+
     df_master_ubycall = master_glovo["ubycall"]
     # ! CLEAN AGENTS CONCENTRIX FILES
     df_people = clean_people(people_active, people_inactive)
@@ -87,22 +98,20 @@ def generate_workers(
     df_api_id = clean_api_id(api_id)
 
     # ! CLEAN DOCUMENT
-    for df in [df_people, df_scheduling_ppp, df_api_id, df_ubycall_master, df_ubycall_scheduling, df_master_concentrix]:
+    for df in [df_people, df_scheduling_ppp, df_api_id, df_ubycall_master, df_ubycall_scheduling, df_master_concentrix, df_master_backup, df_master_supervisor]:
         df = clean_document(df)
 
     # ! MERGE TEAM AND REQUIREMENT ID FROM PPP // MERGE SUPERVISOR FROM MASTER
     df_people_and_ppp = merge_data_for_priority(df_people, df_scheduling_ppp, TEAM, REQUIREMENT_ID)
     df_people_ppp_and_master = merge_data_for_priority(df_people_and_ppp, df_master_concentrix, SUPERVISOR)
+    df_people_ppp_and_master = merge_data_for_priority(df_people_ppp_and_master, df_master_backup, ROLE)
+    df_people_ppp_and_master = merge_data_for_priority(df_people_ppp_and_master, df_master_supervisor, ROLE)
 
     # ! MERGE AGENTS UBYCALL FROM SCHEDULING AND MASTER
     df_ubycall = merge_worker_ubycall(df_ubycall_master, df_ubycall_scheduling)
 
-    print(df_ubycall[df_ubycall['contract_type'] == 'Ubycall'])
-
     # ! CONCAT CX + UBY
     df_final_worker = pd.concat([df_people_ppp_and_master, df_ubycall])
-
-    print(df_final_worker[df_final_worker['contract_type'] == 'Ubycall'])
 
     # ! MERGE CX + UBY WITH API_ID
     df_final_worker = pd.merge(

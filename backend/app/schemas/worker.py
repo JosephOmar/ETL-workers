@@ -3,6 +3,7 @@ from datetime import date, time
 from sqlmodel import SQLModel, Field
 from app.schemas.schedule import ScheduleRead
 from app.schemas.attendance import AttendanceRead
+from pydantic import ConfigDict
 
 class RoleRead(SQLModel):
     name: str
@@ -23,6 +24,8 @@ class ContractTypeRead(SQLModel):
     name: str
 
 class WorkerRead(SQLModel):
+    model_config = ConfigDict(from_attributes=True)
+
     document: str
     name: str
     role: Optional[RoleRead]
@@ -43,4 +46,3 @@ class WorkerRead(SQLModel):
     productive: Optional[str]
 
     schedules: List[ScheduleRead] = Field(default_factory=list)
-    attendances: List[AttendanceRead] = Field(default_factory=list)

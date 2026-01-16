@@ -1,14 +1,38 @@
 from typing import Optional
 from datetime import date, time
 from sqlmodel import SQLModel
+from pydantic import ConfigDict
+
 
 class AttendanceRead(SQLModel):
+    model_config = ConfigDict(from_attributes=True)
+    schedule_id: int
     api_email: str
     date: date
+
+    # Tiempos base
     check_in: Optional[time]
     check_out: Optional[time]
+
+    # Estado
     status: str
-    time_aux_productive: Optional[int]
-    time_aux_non_productive: Optional[int] 
-    adherence: Optional[float]
-    time_outside_scheduled: Optional[int]
+
+    # Tiempos (minutos)
+    time_aux_productive: int
+    time_aux_no_productive: int
+
+    # Métrica
+    adherence: float
+
+    # Flags de comportamiento
+    early_login: bool
+    early_login_minutes: int
+
+    late_logout: bool
+    late_logout_minutes: int
+
+    left_early: bool
+    early_leave_minutes: int
+
+    late_login: bool
+    late_login_minutes: int

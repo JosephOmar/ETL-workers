@@ -46,8 +46,8 @@ async def read_workers(session: AsyncSession = Depends(get_session)):
                 selectinload(Worker.team),
                 selectinload(Worker.work_type),
                 selectinload(Worker.contract_type),
-                selectinload(Worker.schedules),
-                selectinload(Worker.attendances),
+                selectinload(Worker.schedules)
+                    .selectinload(Schedule.attendances),
                 with_loader_criteria(
                     Schedule,
                     Schedule.start_date_pe.in_([next_day, current_day, previous_day])),
@@ -55,6 +55,11 @@ async def read_workers(session: AsyncSession = Depends(get_session)):
         )
         result = await session.exec(statement)
         workers = result.all()
+
+        for worker in workers:
+            for schedule in worker.schedules:
+                if schedule.attendances is None:
+                    schedule.attendances = []
 
         return workers
     except Exception as e:

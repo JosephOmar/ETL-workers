@@ -22,6 +22,8 @@ def clean_schedule_concentrix(
     year: int | None = None
 ) -> pd.DataFrame:
 
+    data["NRO_DOCUMENTO"] = data["NRO_DOCUMENTO"].astype(str).str.lstrip("0")
+    data_obs["NRO_DOCUMENTO"] = data_obs["NRO_DOCUMENTO"].astype(str).str.lstrip("0")
     data = data[data["SERVICIO"] == "GLOVO"]
 
     today = date.today()
@@ -71,7 +73,9 @@ def clean_schedule_concentrix(
         date_col = current_date.strftime("%d/%m/%Y")
         if date_col in data_obs.columns:
             obs_map = data_obs.set_index("NRO_DOCUMENTO")[date_col]
+            print(obs_map)
             sub[OBS] = sub[DOCUMENT].map(obs_map)
+            print(sub[OBS].dropna().unique())
             sub[OBS] = sub[OBS].astype(object)
             mask_valid = sub[OBS].str.match(r"^(?!FLT$)[A-Za-z]{3}$")
             sub[OBS] = sub[OBS].where(mask_valid, None)
@@ -87,6 +91,14 @@ def clean_schedule_concentrix(
             .dt.floor("min")
             .dt.time
         )
+
+    mask_rest = data[REST_DAY]
+
+    data.loc[mask_rest, START_TIME_PE] = time(0, 0)
+    data.loc[mask_rest, END_TIME_PE] = time(0, 0)
+
+    data.loc[mask_rest, BREAK_START_TIME_PE] = None
+    data.loc[mask_rest, BREAK_END_TIME_PE] = None
 
     data[BREAK_START_DATE_PE], data[BREAK_END_DATE_PE] = zip(
         *data.apply(lambda r: compute_break_date(r, BREAK_START_TIME_PE, BREAK_END_TIME_PE), axis=1

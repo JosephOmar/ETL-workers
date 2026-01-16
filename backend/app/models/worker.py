@@ -82,4 +82,3 @@ class Worker(SQLModel, table=True):
     status: "Status" = Relationship(back_populates="workers")
 
     schedules: Mapped[List["Schedule"]] = Relationship(back_populates="worker", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
-    attendances: Mapped[List["Attendance"]] = Relationship(back_populates="worker")

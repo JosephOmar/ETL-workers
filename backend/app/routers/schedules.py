@@ -27,7 +27,6 @@ async def upload_schedules(
     try:
         result = await process_and_persist_schedules(files, session)
     except Exception as e:
-        # Propaga errores específicos de data o excel
         raise HTTPException(
             status_code=500,
             detail=f"Error procesando los horarios: {str(e)}"

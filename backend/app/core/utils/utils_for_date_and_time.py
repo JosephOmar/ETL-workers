@@ -1,6 +1,6 @@
 import pytz
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time, date
 from app.core.utils.columns_names import START_TIME_PE, START_DATE_PE
 
 def convert_timezone_columns(
@@ -45,3 +45,12 @@ def compute_break_date(row, start_col, end_col):
         be_date = bs_date + timedelta(days=1)
 
     return bs_date, be_date
+
+def calculate_shift_minutes(start: time, end: time) -> int:
+    start_dt = datetime.combine(date.today(), start)
+    end_dt = datetime.combine(date.today(), end)
+
+    if end_dt <= start_dt:
+        end_dt += timedelta(days=1)
+
+    return int((end_dt - start_dt).total_seconds() / 60)

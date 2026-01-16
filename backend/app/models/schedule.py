@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional
+from typing import Optional, List
 from datetime import date, time
 from sqlalchemy.orm import Mapped
 from sqlalchemy import UniqueConstraint
@@ -42,3 +42,4 @@ class Schedule(SQLModel, table=True):
     obs: Optional[str] = Field(default=None, max_length=4, nullable=True)
 
     worker: Mapped["Worker"] = Relationship(back_populates="schedules")
+    attendances: Mapped[List["Attendance"]] = Relationship(back_populates="schedule", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
