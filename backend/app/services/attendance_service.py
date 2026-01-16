@@ -37,7 +37,7 @@ async def process_and_persist_attendance(
         enriched_rows = await get_workers_and_schedule_for_attendance(session,df)
 
         records = []
-        now = datetime.now()
+        now = datetime.now(ZoneInfo("America/Lima"))
         print(enriched_rows[0])
         for row in enriched_rows:
 
