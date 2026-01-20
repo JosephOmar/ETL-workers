@@ -8,7 +8,7 @@ export function buildCapacityText(
 ): string {
   const concurrency = parseFloat((tickets / agents).toFixed(2));
 
-  const concurrencyMax = team === "Rider Tier1" ? 2 : 3;
+  const concurrencyMax = team === "Rider Tier1" ? 3 : 2;
 
   if (concurrency > concurrencyMax) {
     return (

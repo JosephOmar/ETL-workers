@@ -5,6 +5,7 @@ import { buildCapacityText, buildAvailabilityLine } from "./calculeConcurrency";
 import { calculateAvailableAgents } from "./calculeConcurrency";
 import { ChartWrapper } from "@/components/utils/ChartCopyButton";
 import { buildTableText } from "./utils";
+import html2canvas from "html2canvas-pro";
 
 export const CapacityProcessor = () => {
   const [queuesInput, setQueuesInput] = useState("");
@@ -117,7 +118,20 @@ export const CapacityProcessor = () => {
     );
   }, [tier1Results]);
 
+  const handleCopy = async () => {
+    const element = document.getElementById("table-concurrency-ref");
+    if (!element) return alert("Elemento no encontrado");
 
+    try {
+      const canvas = await html2canvas(element, { scale: 2 });
+      canvas.toBlob(async (blob) => {
+        if (!blob) return alert("Error generando la imagen");
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      }, "image/png");
+    } catch (error) {
+      console.error("Error copiando el chart:", error);
+    }
+  };
 
 
   return (
@@ -135,14 +149,14 @@ export const CapacityProcessor = () => {
         placeholder="Pega agentes"
         onChange={e => setAgentsInput(e.target.value)}
       />
-      <ChartWrapper id="agents-coordinator-bar" title="Capacity">
-        <table className="mx-auto w-[70%] text-xs border">
+      <section>
+        <table id="table-concurrency-ref" className="mx-auto w-[70%] text-xs border">
           <thead className="bg-gray-200">
             <tr>
-              <th className="border p-1">CHANNEL</th>
+              <th className="border p-1">TEAM</th>
               <th className="border p-1">BACKLOG</th>
               <th className="border p-1">TICKETS</th>
-              <th className="border p-1">HEAD</th>
+              <th className="border p-1">AGENTS</th>
             </tr>
           </thead>
           <tbody>
@@ -156,8 +170,19 @@ export const CapacityProcessor = () => {
             ))}
           </tbody>
         </table>
-      </ChartWrapper>
-      
+        <div className="flex gap-3 mx-auto w-[70%]">
+          <button className="border px-4 py-2 text-xs font-bold" onClick={handleCopy}> Copiar Imagen</button>
+          <button
+            className="border px-4 py-2 text-xs font-bold"
+            onClick={() =>
+              navigator.clipboard.writeText(buildTableText(tableRows))
+            }
+          >
+            Copiar Texto
+          </button>
+        </div>
+      </section>
+
       <div className="mx-auto w-[70%] space-y-2">
         <div className="flex gap-2 flex-wrap">
           {tier1Results.map(r => (
@@ -181,15 +206,6 @@ export const CapacityProcessor = () => {
             onClick={() => navigator.clipboard.writeText(availabilityText)}
           >
             Disponibilidad
-          </button>
-
-          <button
-            className="border px-4 py-2 text-xs font-bold"
-            onClick={() =>
-              navigator.clipboard.writeText(buildTableText(tableRows))
-            }
-          >
-            Copiar Tabla
           </button>
         </div>
       </div>

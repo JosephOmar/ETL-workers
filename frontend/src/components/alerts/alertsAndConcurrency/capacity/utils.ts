@@ -1,3 +1,5 @@
+import { getPeruRoundedTime } from "@/components/utils/UtilsForTime";
+
 export const QUEUE_NAME_MAP: Record<string, string> = {
   "CS-case-inbox-spa-ES-tier2": "Customer Tier2",
   "RS-case-inbox-spa-ES-tier2": "Rider Tier2",
@@ -37,11 +39,18 @@ type TableRow = {
 };
 
 export function buildTableText(rows: TableRow[]): string {
-  const header = `Team\tBacklog\tTtickets\tAgents`;
+  const header = `Team\tBacklog\tTickets\tAgents`;
 
   const body = rows.map(r =>
     `${r.team}\t${r.backlog}\t${r.tickets}\t${r.agents}`
   );
 
-  return [header, ...body].join("\n");
+  const time = getPeruRoundedTime();
+
+  return [
+    header,
+    ...body,
+    "",
+    `Conexión: ${time} HP`,
+  ].join("\n");
 }
