@@ -1,7 +1,7 @@
 from sqlalchemy import select, func, case
 from app.models.attendance import Attendance
 from app.models.schedule import Schedule
-from app.models.worker import Worker, Team
+from app.models.worker import Worker, Team, Role
 from app.reports.attendance.reportAttendanceFilters import apply_base_filters
 
 # -----------------------------
@@ -23,9 +23,6 @@ def get_adherence_rows(date_from, date_to, team_names=None, coordinator=None):
             Team.name.label("team"),
         )
         .select_from(Attendance)
-        .join(Schedule, Attendance.schedule_id == Schedule.id)
-        .join(Worker, Schedule.document == Worker.document)
-        .join(Team, Worker.team_id == Team.id)
     )
 
     return apply_base_filters(stmt, date_from, date_to, team_names, coordinator)
@@ -41,7 +38,7 @@ def get_kpi_block(date_from, date_to, team_names=None, coordinator=None):
             func.count(
                 func.distinct(
                     case(
-                        (Attendance.adherence < 90, Worker.api_email),
+                        ((Attendance.adherence < 90) & (Attendance.time_aux_no_productive > 20) ,Worker.api_email),
                         else_=None
                     )
                 )
@@ -57,9 +54,6 @@ def get_kpi_block(date_from, date_to, team_names=None, coordinator=None):
             func.coalesce(func.avg(Attendance.adherence), 0).label("avg_adherence"),
         )
         .select_from(Attendance)
-        .join(Schedule, Attendance.schedule_id == Schedule.id)
-        .join(Worker, Schedule.document == Worker.document)
-        .join(Team, Worker.team_id == Team.id)
     )
     return apply_base_filters(stmt, date_from, date_to, team_names, coordinator)
 
@@ -74,9 +68,6 @@ def get_penalty_by_status(date_from, date_to, team_names=None, coordinator=None)
             func.avg(Attendance.time_aux_no_productive).label("avg_penalty_minutes"),
         )
         .select_from(Attendance)
-        .join(Schedule, Attendance.schedule_id == Schedule.id)
-        .join(Worker, Schedule.document == Worker.document)
-        .join(Team, Worker.team_id == Team.id)
         .group_by(Attendance.adherence_status)
     )
     return apply_base_filters(stmt, date_from, date_to, team_names, coordinator)
@@ -88,13 +79,11 @@ def get_agents_below_90_by_team(date_from, date_to, team_names=None, coordinator
             Team.name.label("team"),
             func.count(func.distinct(Worker.api_email))
                 .filter(Attendance.adherence < 90)
+                .filter(Attendance.time_aux_no_productive > 20)
                 .label("agents_below_90"),
             func.count(func.distinct(Worker.api_email)).label("total_agents"),
         )
         .select_from(Attendance)
-        .join(Schedule, Attendance.schedule_id == Schedule.id)
-        .join(Worker, Schedule.document == Worker.document)
-        .join(Team, Worker.team_id == Team.id)
         .group_by(Team.name)
     )
     return apply_base_filters(stmt, date_from, date_to, team_names, coordinator)
@@ -107,10 +96,8 @@ def get_agents_below_90_by_coordinator(date_from, date_to, team_names=None, coor
             func.count(func.distinct(Worker.api_email)).label("agents_below_90"),
         )
         .select_from(Attendance)
-        .join(Schedule, Attendance.schedule_id == Schedule.id)
-        .join(Worker, Schedule.document == Worker.document)
-        .join(Team, Worker.team_id == Team.id)
         .where(Attendance.adherence < 90)
+        .where(Attendance.time_aux_no_productive > 20)
         .group_by(Worker.coordinator)
     )
     return apply_base_filters(stmt, date_from, date_to, team_names, coordinator)
@@ -123,11 +110,9 @@ def get_deviation_reason_donut(date_from, date_to, team_names=None, coordinator=
             func.count().label("agents_count"),
         )
         .select_from(Attendance)
-        .join(Schedule, Attendance.schedule_id == Schedule.id)
-        .join(Worker, Schedule.document == Worker.document)
-        .join(Team, Worker.team_id == Team.id)
         .where(
             Attendance.adherence < 90,
+            Attendance.time_aux_no_productive > 20,
             Attendance.main_deviation_reason.isnot(None)
         )
         .group_by(Attendance.main_deviation_reason)

@@ -1,7 +1,8 @@
 from typing import Optional
 from sqlalchemy.sql import Select
-from app.models.worker import Worker, Team
+from app.models.worker import Worker, Team, Role
 from app.models.attendance import Attendance
+from app.models.schedule import Schedule
 
 # Equipos válidos para el reporte
 ALLOWED_TEAMS_FOR_ADHERENCE = [
@@ -42,7 +43,20 @@ def apply_base_filters(
     team_names=None,
     coordinator=None
 ) -> Select:
-    stmt = stmt.where(Attendance.date.between(date_from, date_to))
+    stmt = (
+        stmt
+        .select_from(Attendance)
+        .join(Schedule, Attendance.schedule_id == Schedule.id)
+        .join(Worker, Schedule.document == Worker.document)
+        .join(Role, Worker.role_id == Role.id)
+        .join(Team, Worker.team_id == Team.id)
+        .where(
+            Attendance.date.between(date_from, date_to),
+            Role.name == "Agent"
+        )
+    )
+
     stmt = apply_allowed_teams_filter(stmt)
     stmt = apply_worker_filters(stmt, team_names, coordinator)
+
     return stmt
