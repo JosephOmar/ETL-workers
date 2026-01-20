@@ -30,6 +30,7 @@ import WorkersProductiveFilter from "./components/filters/WorkersProductiveFilte
 import { copyWorkersAttendance } from "./components/buttonsCopy/copyWorkersAttendance";
 import { copyWorkersSchedules } from "./components/buttonsCopy/copyWorkersSchedules";
 import { getEvaluationDateTime } from "./components/utils/helpersWorkersTableColumns";
+import { copyWorkerUrlApi } from "./components/buttonsCopy/copyWorkersUrlApi";
 
 const WorkersTable: React.FC = () => {
   const loading = useWorkersStore((s) => s.loading);
@@ -91,6 +92,9 @@ const WorkersTable: React.FC = () => {
         </Button>
         <Button className="btn-grad text-black" onClick={() => copyWorkersSchedules(workers, filterDate)}>
           Copy Schedules
+        </Button>
+        <Button className="btn-grad text-black" onClick={() => copyWorkerUrlApi(workers)}>
+          Copy Url
         </Button>
       </div>
       <table className=" min-w-full bg-white shadow-md rounded-lg overflow-hidden">
