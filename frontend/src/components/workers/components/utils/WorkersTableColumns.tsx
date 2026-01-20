@@ -4,7 +4,7 @@ import type { Attendance } from "@/components/types/attendance.type";
 import type { Column, ZoneType } from "@/components/types/table-column";
 
 import { timeToMinutes, toDateTime } from "@/components/utils/UtilsForTime";
-import { isAgentWorkingAt } from "./getEvaluationDateTime";
+import { getAttendanceByDate, getScheduleAtDateTime, isAgentWorkingAt, getScheduleOfDay, getAttendanceStatus, getAttendanceFromSchedule } from "./helpersWorkersTableColumns";
 
 interface Props {
   filterDate: string;
@@ -12,53 +12,17 @@ interface Props {
   evaluationDateTime: Date | null;
 }
 
-export const getAttendanceFromSchedule = (
-    schedule?: Schedule,
-    filterZone?: ZoneType
-  ): Attendance | undefined => {
-    if (!schedule || !schedule.attendances?.length) return undefined;
-
-    const scheduleDate =
-      filterZone === "PE"
-        ? schedule.start_date_pe
-        : schedule.start_date_es;
-
-    return schedule.attendances.find(
-      (a) => a.date === scheduleDate
-    );
-  };
-
 export const WorkersTableColumns = ({
   filterDate,
   filterZone,
   evaluationDateTime,
 }: Props): Column<Worker>[] => {
-
-  /* =========================
-     Helpers
-  ========================== */
-
-  const getScheduleOfDay = (worker: Worker): Schedule | undefined =>
-    worker.schedules.find((s) =>
-      filterZone === "PE"
-        ? s.start_date_pe === filterDate
-        : s.start_date_es === filterDate
-    );
-
-  const getScheduleAtDateTime = (
-    worker: Worker,
-    dateTime: Date
-  ): Schedule | undefined =>
-    worker.schedules.find(
-      isAgentWorkingAt(dateTime, filterZone)
-    );
-
-
-
-  /* =========================
-     Columns
-  ========================== */
-
+  
+  const getEffectiveSchedule = (w: Worker): Schedule | undefined => {
+    return evaluationDateTime
+    ? getScheduleAtDateTime(w, evaluationDateTime, filterZone)
+    : getScheduleOfDay(w, filterZone, filterDate);
+  }
   return [
     {
       key: "document",
@@ -96,15 +60,13 @@ export const WorkersTableColumns = ({
       header: "Schedule",
       sortable: true,
       sortValue: (w) => {
-        const s = getScheduleOfDay(w);
+        const s = getScheduleOfDay(w, filterZone, filterDate);
         return timeToMinutes(
           filterZone === "PE" ? s?.start_time_pe : s?.start_time_es
         );
       },
       render: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
+        const schedule = getEffectiveSchedule(w)
 
         if (!schedule) return "-";
         if (!evaluationDateTime && schedule.is_rest_day) return "Descanso";
@@ -119,32 +81,28 @@ export const WorkersTableColumns = ({
       header: "Break",
       sortable: true,
       sortValue: (w) => {
-        const s = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
+          const schedule = getEffectiveSchedule(w)
 
         if (
-          !s ||
-          s.is_rest_day ||
+          !schedule ||
+          schedule.is_rest_day ||
           w.role?.name !== "Agent" ||
           ["Part Time", "Ubycall"].includes(w.contract_type?.name ?? "")
         ) {
-          return 0; // Si no hay break, lo ordenamos al inicio
+          return 0;
         }
 
         const start =
-          filterZone === "PE" ? s.break_start_time_pe : s.break_start_time_es;
+          filterZone === "PE" ? schedule.break_start_time_pe : schedule.break_start_time_es;
 
         return start ? timeToMinutes(start) : 0;
       },
       render: (w) => {
-        const s = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
+        const schedule = getEffectiveSchedule(w)
 
         if (
-          !s ||
-          s.is_rest_day ||
+          !schedule ||
+          schedule.is_rest_day ||
           w.role?.name !== "Agent" ||
           ["Part Time", "Ubycall"].includes(w.contract_type?.name ?? "")
         ) {
@@ -152,9 +110,9 @@ export const WorkersTableColumns = ({
         }
 
         const start =
-          filterZone === "PE" ? s.break_start_time_pe : s.break_start_time_es;
+          filterZone === "PE" ? schedule.break_start_time_pe : schedule.break_start_time_es;
         const end =
-          filterZone === "PE" ? s.break_end_time_pe : s.break_end_time_es;
+          filterZone === "PE" ? schedule.break_end_time_pe : schedule.break_end_time_es;
 
         return start && end ? `${start.slice(0, 5)} - ${end.slice(0, 5)}` : "-";
       },
@@ -163,10 +121,7 @@ export const WorkersTableColumns = ({
       key: "obs",
       header: "Obs",
       render: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
-
+        const schedule = getEffectiveSchedule(w)
 
         return schedule?.obs ?? ''
       },
@@ -175,10 +130,7 @@ export const WorkersTableColumns = ({
       key: "attendance",
       header: "Attendance",
       render: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
-
+        const schedule = getEffectiveSchedule(w)
         const attendance = getAttendanceFromSchedule(schedule, filterZone);
         const status = attendance?.status || "Absent";
 
@@ -202,9 +154,7 @@ export const WorkersTableColumns = ({
       key: "checkIn",
       header: "Check In",
       render: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
+        const schedule = getEffectiveSchedule(w)
 
         return getAttendanceFromSchedule(schedule, filterZone)?.check_in || "-";
       },
@@ -213,9 +163,7 @@ export const WorkersTableColumns = ({
       key: "checkOut",
       header: "Check Out",
       render: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
+        const schedule = getEffectiveSchedule(w)
 
         return getAttendanceFromSchedule(schedule, filterZone)?.check_out || "-";
       },
@@ -225,22 +173,18 @@ export const WorkersTableColumns = ({
       header: "Adherence",
       sortable: true,
       sortValue: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
+        const schedule = getEffectiveSchedule(w)
 
         const a = getAttendanceFromSchedule(schedule, filterZone);
-        return a?.adherence != null ? a.adherence * 100 : 0;
+        return a?.adherence != null ? a.adherence: 0;
       },
       render: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
+        const schedule = getEffectiveSchedule(w)
 
         const a = getAttendanceFromSchedule(schedule, filterZone);
-        const adherence = a?.adherence != null ? parseInt((a.adherence * 100).toFixed(0)) : 0;
+        const adherence = a?.adherence != null ? a.adherence : 0;
 
-        const adherenceClass = adherence < 86 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
+        const adherenceClass = adherence < 90 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
 
         return <span className={adherenceClass}>{adherence}%</span>;
       },
@@ -250,21 +194,14 @@ export const WorkersTableColumns = ({
       header: "Aux No Productive",
       sortable: true,
       sortValue: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
-
+        const schedule = getEffectiveSchedule(w)
         const a = getAttendanceFromSchedule(schedule, filterZone);
         return a?.time_aux_no_productive ?? 0;
       },
       render: (w) => {
-        const schedule = evaluationDateTime
-          ? getScheduleAtDateTime(w, evaluationDateTime)
-          : getScheduleOfDay(w);
-
-        const a = getAttendanceFromSchedule(schedule, filterZone)
-        const aux_no_productive =  a?.time_aux_no_productive || 0;
-
+        const schedule = getEffectiveSchedule(w)
+        const attendance = getAttendanceFromSchedule(schedule, filterZone)
+        const aux_no_productive =  attendance?.time_aux_no_productive || 0;
         const auxClass = aux_no_productive > 20 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
 
         return <span className={auxClass}>{aux_no_productive}</span>;

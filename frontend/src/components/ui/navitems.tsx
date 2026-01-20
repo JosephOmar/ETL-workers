@@ -47,7 +47,7 @@ export function DropdownIconLink({href,icon,label}: {href: string, icon: React.R
 export function Logo() {
   return (
     <a href="/" className="mr-6 text-lg font-bold">
-      MyApp
+      GTR Support
     </a>
   )
 }

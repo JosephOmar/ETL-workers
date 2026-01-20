@@ -10,11 +10,11 @@ export function Header() {
       <nav className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-4">
         <Logo />
 
-        <NavItem label="Home">
+        <NavItem label="Reports">
           <Dropdown>
-            <DropdownLink href="/">Dashboard</DropdownLink>
-            <DropdownLink href="/profile">Profile</DropdownLink>
-            <DropdownLink href="/settings">Settings</DropdownLink>
+            <DropdownLink href="/reports/adherence">Adherence</DropdownLink>
+            <DropdownLink href="/reports/forecast-vs-real">Forecast vs Real</DropdownLink>
+            <DropdownLink href="/reports/sla-breached">SLA Breached</DropdownLink>
           </Dropdown>
         </NavItem>
 

@@ -2,7 +2,7 @@ import { useWorkersStore } from "@/components/store/workerStore";
 import { filterByDate, filterByAttendance, filterByContract, filterByTeam, filterByTimeRange, filterByRole, filterByAdherence, filterByProductive } from "../filters/WorkerFilters";
 import { filterByBulkSearch } from "../search/filterByBulkSearch";
 import { useMemo } from "react";
-import { getEvaluationDateTime } from "./getEvaluationDateTime";
+import { getEvaluationDateTime } from "./helpersWorkersTableColumns";
 
 export const useFilteredWorkers = () => {
   const workers = useWorkersStore(s => s.workers);
@@ -36,7 +36,7 @@ export const useFilteredWorkers = () => {
       .filter((w) => !filterProductive || filterByProductive(w))
       .filter(filterByAttendance(filterAttendance, filterDate, evaluationDateTime, filterZone))
       .filter(filterByBulkSearch(searchText, searchField))
-      .filter((w) => !filterAdherenceBelow || filterByAdherence(85, filterDate, evaluationDateTime, filterZone)(w))
+      .filter((w) => !filterAdherenceBelow || filterByAdherence(90, filterDate, evaluationDateTime, filterZone)(w))
       console.log(workersFiltered)
       return workersFiltered
   }, [

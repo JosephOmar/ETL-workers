@@ -1,3 +1,4 @@
+import type { Worker } from "@/components/types/worker.type";
 import type { ZoneType } from "@/components/types/table-column";
 import type { Schedule } from "@/components/types/schedule.type";
 import { toDateTime } from "@/components/utils/UtilsForTime";
@@ -53,4 +54,52 @@ export const getAttendanceByDate = (
     schedule,
     attendance: schedule.attendances[0],
   };
+};
+
+
+export const getAttendanceFromSchedule = (
+    schedule?: Schedule,
+    filterZone?: ZoneType
+  ): Attendance | undefined => {
+    if (!schedule || !schedule.attendances?.length) return undefined;
+
+    const scheduleDate =
+      filterZone === "PE"
+        ? schedule.start_date_pe
+        : schedule.start_date_es;
+
+    return schedule.attendances.find(
+      (a) => a.date === scheduleDate
+    );
+  };
+
+export const getScheduleOfDay = (worker: Worker, filterZone: ZoneType, filterDate: string): Schedule | undefined =>
+    worker.schedules.find((s) =>
+      filterZone === "PE"
+        ? s.start_date_pe === filterDate
+        : s.start_date_es === filterDate
+    );
+
+export const getScheduleAtDateTime = (
+    worker: Worker,
+    dateTime: Date,
+    filterZone: ZoneType
+  ): Schedule | undefined =>
+    worker.schedules.find(
+      isAgentWorkingAt(dateTime, filterZone)
+    );
+
+export const getAttendanceStatus = (
+  w: Worker,
+  evaluationDateTime: Date | null,
+  filterZone: "PE" | "ES",
+  filterDate: string,
+): string => {
+  const schedule = evaluationDateTime
+    ? getScheduleAtDateTime(w, evaluationDateTime, filterZone)
+    : getScheduleOfDay(w, filterZone, filterDate);
+
+  return (
+    getAttendanceFromSchedule(schedule, filterZone)?.status ?? "Absent"
+  );
 };

@@ -3,9 +3,9 @@ import type { Worker } from "@/components/types/worker.type";
 import type { ZoneType } from "@/components/types/table-column";
 import { useWorkersStore } from "@/components/store/workerStore";
 import { toDateTime } from "@/components/utils/UtilsForTime";
-import { isAgentWorkingAt } from "../utils/getEvaluationDateTime";
+import { isAgentWorkingAt } from "../utils/helpersWorkersTableColumns";
 import type { Attendance } from "@/components/types/attendance.type";
-import { getAttendanceFromSchedule } from "../utils/WorkersTableColumns";
+import { getAttendanceFromSchedule } from "../utils/helpersWorkersTableColumns";
 
 export const filterByDate =
   (date: string, filterZone: ZoneType) =>
@@ -91,7 +91,7 @@ export const filterByAdherence =
 
     const attendance = getAttendanceFromSchedule(schedule, filterZone as "PE" | "ES");
 
-    const adherence = attendance?.adherence != null ? attendance.adherence * 100 : 0;
+    const adherence = attendance?.adherence != null ? attendance.adherence: 0;
     const aux_no_productive = attendance?.time_aux_no_productive != null ? attendance.time_aux_no_productive : 0;
 
     return adherence < threshold && aux_no_productive > 20;

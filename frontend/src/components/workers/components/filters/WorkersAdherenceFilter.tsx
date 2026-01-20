@@ -11,7 +11,7 @@ const WorkersAdherenceFilter = () => {
         checked={filterAdherenceBelow}
         onChange={(e) => setFilterAdherenceBelow(e.target.checked)}
       />
-      Show adherence &lt; 85%
+      Show adherence &lt; 90%
     </label>
   );
 };

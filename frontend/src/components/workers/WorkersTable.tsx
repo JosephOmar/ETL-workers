@@ -24,12 +24,12 @@ import { WorkersActionsBar } from "./components/ui/WorkerActionsBar";
 import { WorkersStatus } from "./components/ui/WorkersStatus";
 import { ClearFiltersButton } from "./components/filters/ClearFiltersButton";
 import WorkersTimeRangeFilter from "./components/filters/WorkersTimeRangeFilter";
-import { getEvaluationDateTime } from "./components/utils/getEvaluationDateTime";
 import WorkersRoleFilter from "./components/filters/WorkersRoleFilter";
 import WorkersAdherenceFilter from "./components/filters/WorkersAdherenceFilter";
 import WorkersProductiveFilter from "./components/filters/WorkersProductiveFilter";
 import { copyWorkersAttendance } from "./components/buttonsCopy/copyWorkersAttendance";
 import { copyWorkersSchedules } from "./components/buttonsCopy/copyWorkersSchedules";
+import { getEvaluationDateTime } from "./components/utils/helpersWorkersTableColumns";
 
 const WorkersTable: React.FC = () => {
   const loading = useWorkersStore((s) => s.loading);
