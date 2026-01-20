@@ -27,8 +27,8 @@ class Attendance(SQLModel, table=True):
     schedule_id: int = Field( sa_column=Column( ForeignKey("schedule.id", ondelete="CASCADE"), nullable=False))
     api_email: str = Field(index=True)
 
-    schedule: Mapped["Schedule"] = Relationship(back_populates="attendances")
-
+    schedule: Mapped["Schedule"] = Relationship(back_populates="attendances", sa_relationship_kwargs={"lazy": "raise"})
+    effective_work_time: int = Field(default=0)
     # -----------------------------
     # Identidad del día
     # -----------------------------
@@ -55,6 +55,8 @@ class Attendance(SQLModel, table=True):
     # Métricas
     # -----------------------------
     adherence: float = Field(default=0)
+    main_deviation_reason: Optional[str] = Field(default=None)
+    adherence_status: str = Field(default=None)
 
     # -----------------------------
     # Flags de comportamiento

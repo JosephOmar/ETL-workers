@@ -47,6 +47,7 @@ async def bulk_upsert_workers(session: AsyncSession, workers_data: List[Dict]) -
     )
 
     await session.exec(stmt)
+    await session.commit()
 
     return {"inserted_or_updated": len(workers_data)}
 

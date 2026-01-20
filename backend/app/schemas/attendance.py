@@ -7,6 +7,7 @@ from pydantic import ConfigDict
 class AttendanceRead(SQLModel):
     model_config = ConfigDict(from_attributes=True)
     schedule_id: int
+    effective_work_time: int
     api_email: str
     date: date
 
@@ -23,6 +24,8 @@ class AttendanceRead(SQLModel):
 
     # Métrica
     adherence: float
+    main_deviation_reason: Optional[str]
+    adherence_status: str
 
     # Flags de comportamiento
     early_login: bool

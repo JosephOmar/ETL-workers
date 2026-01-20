@@ -4,7 +4,7 @@ from datetime import date, time
 from sqlalchemy.orm import Mapped
 from .schedule import Schedule  # Importa Schedule
 from .attendance import Attendance  # Importa Attendance
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import UniqueConstraint, Column, ForeignKey
 
 class Role(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -53,17 +53,17 @@ class Worker(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     document: str = Field(unique=True, max_length=10)
     name: str = Field(max_length=100)
-    role_id: Optional[int] = Field(default=None, foreign_key="role.id")
-    status_id: Optional[int] = Field(default=None, foreign_key="status.id")
-    campaign_id: Optional[int] = Field(default=None, foreign_key="campaign.id")
-    team_id: Optional[int] = Field(default=None, foreign_key="team.id")
+    role_id: Optional[int] = Field( sa_column=Column( ForeignKey("role.id", ondelete="CASCADE"), nullable=False))
+    status_id: Optional[int] = Field( sa_column=Column( ForeignKey("status.id", ondelete="CASCADE"), nullable=False))
+    campaign_id: Optional[int] = Field( sa_column=Column( ForeignKey("campaign.id", ondelete="CASCADE"), nullable=False))
+    team_id: Optional[int] = Field( sa_column=Column( ForeignKey("team.id", ondelete="CASCADE"), nullable=False))
     manager: str = Field(default=None, max_length=100, nullable=True)
     supervisor: str = Field(default=None, max_length=100, nullable=True)
     coordinator: str = Field(default=None, max_length=100, nullable=True)
-    work_type_id: Optional[int] = Field(default=None, foreign_key="worktype.id")
+    work_type_id: Optional[int] = Field( sa_column=Column( ForeignKey("worktype.id", ondelete="CASCADE"), nullable=False))
     start_date: Optional[date] = Field(default=None)
     termination_date: Optional[date] = Field(default=None)
-    contract_type_id: Optional[int] = Field(default=None, foreign_key="contracttype.id")
+    contract_type_id: Optional[int] = Field( sa_column=Column( ForeignKey("contracttype.id", ondelete="CASCADE"), nullable=False))
     requirement_id: Optional[str] = Field(default=None, max_length=15)
     api_id: Optional[str] = Field(default=None, max_length=40)
     api_name: Optional[str] = Field(default=None, max_length=100)
@@ -81,4 +81,4 @@ class Worker(SQLModel, table=True):
     campaign: "Campaign" = Relationship(back_populates="workers")
     status: "Status" = Relationship(back_populates="workers")
 
-    schedules: Mapped[List["Schedule"]] = Relationship(back_populates="worker", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    schedules: Mapped[List["Schedule"]] = Relationship(back_populates="worker", sa_relationship_kwargs={"lazy": "raise"})

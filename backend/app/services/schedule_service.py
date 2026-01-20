@@ -26,7 +26,6 @@ async def process_and_persist_schedules(
         df = normalize_for_db(df)
         schedules_data = df.to_dict(orient="records")
         result = await bulk_upsert_schedules_on_conflict(session, schedules_data)
-        await session.commit()
 
         return result
 

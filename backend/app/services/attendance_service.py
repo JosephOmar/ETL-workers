@@ -2,6 +2,7 @@ from fastapi import HTTPException, UploadFile
 from typing import List
 from sqlmodel import select, and_
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from app.services.utils.upload_service import handle_file_upload_generic
 from app.utils.validate_excel_attendance import validate_excel_attendance, ATTENDANCE_MAPPING
@@ -20,6 +21,8 @@ def intersect_minutes(a_start, a_end, b_start, b_end) -> int:
         return 0
     return int((end - start).total_seconds() / 60)
 
+TZ = ZoneInfo("America/Lima")
+
 async def process_and_persist_attendance(
     files: List[UploadFile],
     session: AsyncSession,
@@ -37,7 +40,7 @@ async def process_and_persist_attendance(
         enriched_rows = await get_workers_and_schedule_for_attendance(session,df)
 
         records = []
-        now = datetime.now()
+        now = datetime.now(TZ)
         print(enriched_rows[0])
         for row in enriched_rows:
 
@@ -61,11 +64,14 @@ async def process_and_persist_attendance(
                 # -----------------------------
                 start_dt = datetime.combine(
                     schedule.start_date_pe,
-                    schedule.start_time_pe
+                    schedule.start_time_pe,
+                    tzinfo=TZ
                 )
+                
                 end_dt = datetime.combine(
                     schedule.end_date_pe,
-                    schedule.end_time_pe
+                    schedule.end_time_pe,
+                    tzinfo=TZ
                 )
 
                 if end_dt <= start_dt:
@@ -81,11 +87,14 @@ async def process_and_persist_attendance(
                 ):
                     break_start_dt = datetime.combine(
                         schedule.break_start_date_pe,
-                        schedule.break_start_time_pe
+                        schedule.break_start_time_pe,
+                        tzinfo=TZ
                     )
+                    
                     break_end_dt = datetime.combine(
                         schedule.break_end_date_pe,
-                        schedule.break_end_time_pe
+                        schedule.break_end_time_pe,
+                        tzinfo=TZ
                     )
                     time_break = intersect_minutes(
                         break_start_dt, break_end_dt,
@@ -119,6 +128,8 @@ async def process_and_persist_attendance(
                 # -----------------------------
                 for e in events:
                     ev_start = e["start"]
+                    if ev_start.tzinfo is None:
+                        ev_start = ev_start.replace(tzinfo=TZ)
                     ev_end = ev_start + timedelta(minutes=e["minutes"])
                     ev_type = e["type"]
 
@@ -208,7 +219,7 @@ async def process_and_persist_attendance(
                 # 6️⃣ Adherence
                 # -----------------------------
                 if effective_work_time > 0:
-                    adherence = min(time_aux_productive / effective_work_time, 1)
+                    adherence = round(min(time_aux_productive / effective_work_time, 1) * 100)
                 else:
                     adherence = 0
                 # -----------------------------
@@ -217,12 +228,34 @@ async def process_and_persist_attendance(
                 early_login = early_login_minutes > 0
                 late_logout = late_logout_minutes > 0
                 # -----------------------------
+                # 6️⃣ Calculated Variables
+                # -----------------------------
+                adherence_status = None
+                if adherence >= 90:
+                    adherence_status = 'Low'
+                elif adherence >= 80:
+                    adherence_status = 'Medium'
+                elif adherence >= 70:
+                    adherence_status = 'High'
+                else:
+                    adherence_status = 'Critical'
+                # -----------------------------
                 # 7️⃣ Guardar registro
                 # -----------------------------
+                intermediate_aux = time_aux_no_productive - (late_login_minutes + early_leave_minutes)
+                main_deviation_reason = None
+                if now >= end_dt:
+                    if max(intermediate_aux, late_login_minutes, early_leave_minutes) == intermediate_aux:
+                        main_deviation_reason = 'Excesive Aux'
+                    elif max(intermediate_aux, late_login_minutes, early_leave_minutes) == late_login_minutes:
+                        main_deviation_reason = 'Late Login'
+                    elif max(intermediate_aux, late_login_minutes, early_leave_minutes) == early_leave_minutes:
+                        main_deviation_reason = 'Early Leave'
                 if check_in_dt:
                     records.append({
                         "api_email": api_email,
                         "schedule_id": schedule.id,
+                        "effective_work_time": effective_work_time,
                         "date": start_dt.date(),
 
                         # Tiempos base
@@ -238,6 +271,8 @@ async def process_and_persist_attendance(
 
                         # Adherence
                         "adherence": adherence,
+                        "adherence_status": adherence_status,
+                        "main_deviation_reason": main_deviation_reason,
 
                         # Flags de comportamiento
                         "early_login": early_login,
@@ -260,8 +295,6 @@ async def process_and_persist_attendance(
             session=session,
             attendance_data=records
         )
-
-        await session.commit()
         return result
 
     except Exception as e:

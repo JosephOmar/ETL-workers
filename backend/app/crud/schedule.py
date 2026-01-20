@@ -35,13 +35,6 @@ async def bulk_upsert_schedules_on_conflict(
                     Schedule.start_date_pe == start_date_pe
                 )
             )
-        else:
-            await session.exec(
-                delete(Schedule).where(
-                    Schedule.document == document,
-                    Schedule.start_date_pe == start_date_pe
-                )
-            )
 
     for i in range(0, len(schedules_data), chunk_size):
         chunk = schedules_data[i : i + chunk_size]
@@ -71,5 +64,7 @@ async def bulk_upsert_schedules_on_conflict(
         )
 
         await session.exec(stmt)
+
+    await session.commit()
 
     return {"inserted_or_updated": len(schedules_data)}

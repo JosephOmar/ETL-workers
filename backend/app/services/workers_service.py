@@ -45,7 +45,7 @@ async def process_and_persist_workers(
         workers_data = df.to_dict(orient="records")
 
         total = await bulk_upsert_workers(session, workers_data)
-        await session.commit()
+
         return total
 
     except Exception as e:

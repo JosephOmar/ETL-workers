@@ -21,7 +21,12 @@ DATABASE_URL = (
 engine = create_async_engine(
     DATABASE_URL.replace("postgresql+psycopg2://", "postgresql+asyncpg://"),
     echo=False,
-    future=True
+    future=True,
+    pool_size=10,
+    max_overflow=20,
+    pool_timeout=30,
+    pool_recycle=1800,
+    pool_pre_ping=True,
 )
 
 async def get_session():

@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
 from datetime import date, time
 from sqlalchemy.orm import Mapped
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import UniqueConstraint, Column, ForeignKey
 
 class Schedule(SQLModel, table=True):
     __table_args__ = (
@@ -16,7 +16,7 @@ class Schedule(SQLModel, table=True):
     )
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    document: str = Field(foreign_key="worker.document")
+    document: str = Field( sa_column=Column( ForeignKey("worker.document", ondelete="CASCADE"), nullable=False))
 
     start_date_pe: Optional[date] = None
     end_date_pe: Optional[date] = None
@@ -41,5 +41,5 @@ class Schedule(SQLModel, table=True):
     is_rest_day: Optional[bool] = None
     obs: Optional[str] = Field(default=None, max_length=4, nullable=True)
 
-    worker: Mapped["Worker"] = Relationship(back_populates="schedules")
-    attendances: Mapped[List["Attendance"]] = Relationship(back_populates="schedule", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    worker: Mapped["Worker"] = Relationship(back_populates="schedules", sa_relationship_kwargs={"lazy": "raise"})
+    attendances: Mapped[List["Attendance"]] = Relationship(back_populates="schedule", sa_relationship_kwargs={"lazy": "raise"})
