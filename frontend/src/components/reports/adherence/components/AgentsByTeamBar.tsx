@@ -1,22 +1,9 @@
 "use client";
 import React from "react";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend } from "chart.js";
 import { Chart } from "react-chartjs-2"; 
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type { AgentAdherenceRow } from "@/components/types/adherence-report.type";
 import type { ChartData, ChartOptions } from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels
-);
 
 interface Props {
   agents: AgentAdherenceRow[];

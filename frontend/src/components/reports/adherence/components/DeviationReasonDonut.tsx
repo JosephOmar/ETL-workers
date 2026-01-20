@@ -3,34 +3,7 @@
 import React from "react";
 import { Pie } from "react-chartjs-2";
 import type { AgentAdherenceRow } from "@/components/types/adherence-report.type";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  ArcElement, // <--- necesario para Pie / Doughnut
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-
-// Registrar todos los elementos
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  ArcElement, // <--- para Pie / Donut
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels
-);
-
 interface Props {
   agents: AgentAdherenceRow[];
 }

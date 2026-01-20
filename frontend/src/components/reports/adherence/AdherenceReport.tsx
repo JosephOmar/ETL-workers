@@ -15,6 +15,7 @@ import { PenaltyByStatusBar } from "./components/PenaltyByStatusBar";
 import { AgentsByCoordinatorBar } from "./components/AgentsByCoordinatorBar";
 import { ChartWrapper } from "@/components/utils/ChartCopyButton";
 import { PenaltyByTeamTotalHoursBar } from "./components/PenaltyByTeamBar";
+import "@/components/reports/utils/chartConfig"
 
 export const AdherenceReport = () => {
   const { report, fetchReport, loading, dateFrom, dateTo } = useAdherenceReportStore();

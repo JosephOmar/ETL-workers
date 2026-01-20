@@ -3,17 +3,6 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import type { AgentAdherenceRow } from "@/components/types/adherence-report.type";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface Props {
   agents: AgentAdherenceRow[];
