@@ -1,8 +1,8 @@
 import type { Worker } from "@/components/types/worker.type";
 import type { ZoneType } from "@/components/types/table-column";
 import type { Schedule } from "@/components/types/schedule.type";
-import { toDateTime } from "@/components/utils/UtilsForTime";
 import type { Attendance } from "@/components/types/attendance.type";
+import { toDateTime } from "@/components/utils/UtilsForTime";
 
 export const getEvaluationDateTime = (
   filterDate: string,

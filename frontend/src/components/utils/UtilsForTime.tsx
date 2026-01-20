@@ -22,6 +22,10 @@ export const getRelativeDates = (baseDate: Date = new Date()) => {
   ];
 };
 
+export const toDateTime = (date: string, time: string) =>
+  new Date(`${date}T${time}`);
+
+
 export function getPeruRoundedTime(): string {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Lima",
