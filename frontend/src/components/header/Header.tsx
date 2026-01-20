@@ -18,10 +18,10 @@ export function Header() {
           </Dropdown>
         </NavItem>
 
-        <NavItem label="Components">
+        <NavItem label="Alerts">
           <Dropdown>
-            <DropdownLink href="/docs">Docs</DropdownLink>
-            <DropdownLink href="/install">Install</DropdownLink>
+            <DropdownLink href="/alerts/alerts-and-concurrency">Alerts and Concurrency</DropdownLink>
+            <DropdownLink href="/alerts/sla-breached">SLA Breached</DropdownLink>
           </Dropdown>
         </NavItem>
 

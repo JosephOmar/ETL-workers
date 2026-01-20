@@ -1,0 +1,33 @@
+import React, { useState } from "react";
+
+type ActionButtonProps = {
+  label: string;
+  onClick: () => void;
+  colorClass?: string;
+};
+
+export const ActionButton: React.FC<ActionButtonProps> = ({
+  label,
+  onClick,
+  colorClass = "bg-blue-600 hover:bg-blue-700",
+}) => {
+  const [animate, setAnimate] = useState(false);
+
+  const handleClick = () => {
+    setAnimate(true);
+    onClick();
+
+    setTimeout(() => {
+      setAnimate(false);
+    }, 500);
+  };
+
+  return (
+    <button
+      className={`no-style px-4 py-2 text-white rounded transition-colors duration-500 ${animate ? "bg-green-500" : colorClass}`}
+      onClick={handleClick}
+    >
+      {label}
+    </button>
+  );
+};

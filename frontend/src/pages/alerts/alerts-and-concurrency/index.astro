@@ -1,0 +1,9 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { AlertsContainer } from "@/components/alerts/alertsAndConcurrency/alertsCase/AlertsContainer";
+import {CapacityProcessor} from "@/components/alerts/alertsAndConcurrency/capacity/CapacityProcessor";
+---
+<Layout>
+  <AlertsContainer client:load/>
+  <CapacityProcessor client:load/>
+</Layout>

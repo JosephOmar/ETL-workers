@@ -44,3 +44,11 @@ export const flexibleNameMatch = (workerName: string, query: string) => {
     )
   );
 };
+
+export const normalizeWorkerInput = (input: string) =>
+  input
+    .split("(")[0]
+    .split(":")
+    .pop()
+    ?.trim()
+    .toLowerCase();
