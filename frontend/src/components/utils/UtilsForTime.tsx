@@ -4,23 +4,23 @@ export const timeToMinutes = (t?: string) => {
   return h * 60 + m;
 };
 
-export const getRelativeDates = (baseDate: Date = new Date()) => {
+export const getRelativeDates = (
+  baseDate: Date = new Date(),
+  daysBefore: number = 5,
+  daysAfter: number = 1
+) => {
   const format = (d: Date) => d.toISOString().slice(0, 10);
+  const dates: string[] = ["Select Date"];
 
-  const today = new Date(baseDate);
-  const yesterday = new Date(baseDate);
-  const tomorrow = new Date(baseDate);
+  for (let i = -daysBefore; i <= daysAfter; i++) {
+    const date = new Date(baseDate);
+    date.setDate(baseDate.getDate() + i);
+    dates.push(format(date));
+  }
 
-  yesterday.setDate(today.getDate() - 1);
-  tomorrow.setDate(today.getDate() + 1);
-
-  return [
-    "Select Date",
-    format(yesterday),
-    format(today),
-    format(tomorrow),
-  ];
+  return dates;
 };
+
 
 export const toDateTime = (date: string, time: string) =>
   new Date(`${date}T${time}`);
