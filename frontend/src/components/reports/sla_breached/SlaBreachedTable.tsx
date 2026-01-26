@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useSlaBreachedReportStore } from "@/components/store/slaBreachedReportStore";
 import { CopyImageButton } from "@/components/utils/CopyImagenButton";
 import { UploadSlaBreachedButton } from "./UploadSlaBreachedButton";
+import { DailyCoordinatorSummary } from "./DailyCoordinatorSummary";
 
 const TEAMS = [
   "Customer Tier1",
@@ -44,7 +45,6 @@ const getTopByField = (
 
   return isSummary ? sorted : sorted.slice(0, limit);
 };
-
 
 export const SlaBreachedTable = () => {
   const { report, fetchReport, loading } = useSlaBreachedReportStore();
@@ -188,31 +188,37 @@ export const SlaBreachedTable = () => {
         </button>
         <UploadSlaBreachedButton onAfterUpload={() => {fetchReport(true)}}/>
       </div>
-      {/* Tabla */}
-      <div id="sla-breached-table" className="w-[80%] mx-auto py-4">
-        <table className="w-full border">
-        <thead>
-          <tr>
-            <th> Hora ({zone === "PE" ? "Perú" : "España"})</th>
-            <th>Agente</th>
-            <th>Supervisor</th>
-            <th>Coordinator</th>
-            <th>Chats Breached</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.map((row, i) => (
-            <tr key={i} className={`${row.chat_breached > 1 ? 'text-red-500' : ''} text-center`}>
-              <td>{zone === "PE" ? row.interval_pe : row.interval_es}</td>
-              <td>{row.agent}</td>
-              <td>{row.supervisor}</td>
-              <td>{row.coordinator ?? "-"}</td>
-              <td>{row.chat_breached}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      </div>
+      {
+        hour && (
+          <div id="sla-breached-table" className="w-[80%] mx-auto py-4">
+            <table className="w-full border">
+              <thead>
+                <tr>
+                  <th> Hora ({zone === "PE" ? "Perú" : "España"})</th>
+                  <th>Agente</th>
+                  <th>Supervisor</th>
+                  <th>Coordinator</th>
+                  <th>Chats Breached</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((row, i) => (
+                  <tr key={i} className={`${row.chat_breached > 1 ? 'text-red-500' : ''} text-center`}>
+                    <td>{zone === "PE" ? row.interval_pe : row.interval_es}</td>
+                    <td>{row.agent}</td>
+                    <td>{row.supervisor}</td>
+                    <td>{row.coordinator ?? "-"}</td>
+                    <td>{row.chat_breached}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+      {!hour && date && team && (
+        <DailyCoordinatorSummary data={filteredData} />
+      )}
     </>
   );
 };

@@ -23,6 +23,11 @@ export const CapacityProcessor = () => {
   const riderTier1 = queues.find(q => q.team === "Rider Tier1");
   const vendorTier1 = queues.find(q => q.team === "Vendor Chat");
 
+  const cleanInputs = () => {
+    setQueuesInput("")
+    setAgentsInput("")
+  }
+
   const tier1Results = useMemo(() => {
     const results = [];
 
@@ -140,6 +145,7 @@ export const CapacityProcessor = () => {
         className="w-full border p-2"
         rows={6}
         placeholder="Pega colas"
+        value={queuesInput}
         onChange={e => setQueuesInput(e.target.value)}
       />
 
@@ -147,8 +153,15 @@ export const CapacityProcessor = () => {
         className="w-full border p-2"
         rows={6}
         placeholder="Pega agentes"
+        value={agentsInput}
         onChange={e => setAgentsInput(e.target.value)}
       />
+      <button
+            className="border px-4 py-2 text-xs font-bold"
+            onClick={cleanInputs}
+          >
+          Limpiar
+      </button>
       <section>
         <table id="table-concurrency-ref" className="mx-auto w-[70%] text-xs border">
           <thead className="bg-gray-200">
