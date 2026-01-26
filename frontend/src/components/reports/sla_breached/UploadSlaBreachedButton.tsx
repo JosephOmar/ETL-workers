@@ -16,7 +16,6 @@ export function UploadSlaBreachedButton({
       fields={[
         { key: "sla_breached", label: "sla_breached" },
       ]}
-      withTargetDate
       onAfterUpload={onAfterUpload}
     />
   );
