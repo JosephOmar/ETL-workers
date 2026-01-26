@@ -7,6 +7,15 @@ import { ChartWrapper } from "@/components/utils/ChartCopyButton";
 import { buildTableText } from "./utils";
 import html2canvas from "html2canvas-pro";
 
+const TEAM_ORDER = [
+  "Customer Tier1",
+  "Rider Tier1",
+  "Vendor Chat",
+  "Customer Tier2",
+  "Rider Tier2",
+  "Vendor Tier2",
+];
+
 export const CapacityProcessor = () => {
   const [queuesInput, setQueuesInput] = useState("");
   const [agentsInput, setAgentsInput] = useState("");
@@ -80,7 +89,7 @@ export const CapacityProcessor = () => {
 
   const tableRows = useMemo(() => {
     const tier1Rows = tier1Results.map(r => ({
-      team: r.label.toUpperCase(),
+      team: r.label,
       backlog: r.backlog,
       tickets: r.tickets,
       agents: r.agents,
@@ -89,13 +98,18 @@ export const CapacityProcessor = () => {
     const tier2Rows = queues
       .filter(q => q.team.includes("Tier2"))
       .map(q => ({
-        team: q.team.toUpperCase(),
+        team: q.team,
         backlog: q.backlog,
         tickets: q.tickets,
         agents: q.agents,
       }));
 
-    return [...tier1Rows, ...tier2Rows];
+    const allRows = [...tier1Rows, ...tier2Rows];
+
+    return allRows.sort(
+      (a, b) =>
+        TEAM_ORDER.indexOf(a.team) - TEAM_ORDER.indexOf(b.team)
+    );
   }, [tier1Results, queues]);
 
   const availabilityText = useMemo(() => {
