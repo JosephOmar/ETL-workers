@@ -1,7 +1,7 @@
 "use client";
 
 import { CopyImageButton } from "@/components/utils/CopyImagenButton";
-import { GroupByCoordinatorAndSupervisor } from "./groupByCoordinatorAndSupervisor";
+import { GroupByCoordinatorAndSupervisor } from "./GroupByCoordinatorAndSupervisor";
 
 interface Props {
   data: any[];
