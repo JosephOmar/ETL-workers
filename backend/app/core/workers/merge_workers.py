@@ -2,7 +2,7 @@ import pandas as pd
 from app.core.workers.clean_people import clean_people
 from app.core.workers.clean_scheduling_ppp import clean_scheduling_ppp
 from app.core.utils.cleaning_supplies import update_column_based_on_worker
-from app.core.utils.columns_names import NAME, API_EMAIL, API_ID, DOCUMENT, SUPERVISOR, REQUIREMENT_ID, TEAM, OBSERVATION_1, OBSERVATION_2, PRODUCTIVE, MANAGER, CAMPAIGN, ROLE, WORK_TYPE, CONTRACT_TYPE, TERMINATION_DATE, TRAINEE
+from app.core.utils.columns_names import NAME, API_EMAIL, API_ID, DOCUMENT, COORDINATOR, SUPERVISOR, REQUIREMENT_ID, TEAM, OBSERVATION_1, OBSERVATION_2, PRODUCTIVE, MANAGER, CAMPAIGN, ROLE, WORK_TYPE, CONTRACT_TYPE, TERMINATION_DATE, TRAINEE
 from app.core.utils.cleaning_supplies import clean_observations, clean_productive
 from app.core.utils.utils_for_string_and_number import clean_document
 from app.core.workers.clean_master_ubycall import clean_master_ubycall
@@ -122,12 +122,8 @@ def generate_workers(
     )
 
     # ! UPDATE NAME SUPERVISOR FROM PEOPLE
-    df_final_worker = update_column_based_on_worker(
-        df_final_worker,
-        df_people,
-        SUPERVISOR,
-        NAME
-    )
+    for col in [MANAGER, SUPERVISOR, COORDINATOR]:
+        df_final_worker = update_column_based_on_worker(df_final_worker, df_final_worker, col, NAME)
 
     df_final_worker[OBSERVATION_1] = df_final_worker[OBSERVATION_1].astype(str).str.strip().apply(clean_observations)
     df_final_worker[OBSERVATION_2] = df_final_worker[OBSERVATION_2].astype(str).str.strip().apply(clean_observations)

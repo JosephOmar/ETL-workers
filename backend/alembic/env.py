@@ -17,6 +17,7 @@ load_dotenv(ROOT_DIR / '.env', override=True)
 from app.models.worker import Worker, Role, Status, Campaign, Team, WorkType, ContractType
 from app.models.schedule import Schedule
 from app.models.attendance import Attendance
+from app.models.sla_breached import SlaBreached
 
 config = context.config
 

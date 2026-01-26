@@ -104,10 +104,10 @@ def clean_schedule_concentrix(
         *data.apply(lambda r: compute_break_date(r, BREAK_START_TIME_PE, BREAK_END_TIME_PE), axis=1
     ))
 
-    data = convert_timezone_columns(df=data, date_col_src=START_DATE_PE, time_col_src=START_TIME_PE, date_col_dst=START_DATE_ES, time_col_dst=START_TIME_ES)
-    data = convert_timezone_columns(df=data, date_col_src=END_DATE_PE, time_col_src=END_TIME_PE, date_col_dst=END_DATE_ES, time_col_dst=END_TIME_ES)
-    data = convert_timezone_columns(df=data, date_col_src=BREAK_START_DATE_PE, time_col_src=BREAK_START_TIME_PE, date_col_dst=BREAK_START_DATE_ES, time_col_dst=BREAK_START_TIME_ES)
-    data = convert_timezone_columns(df=data, date_col_src=BREAK_END_DATE_PE, time_col_src=BREAK_END_TIME_PE, date_col_dst=BREAK_END_DATE_ES, time_col_dst=BREAK_END_TIME_ES)
+    data = convert_timezone_columns(data, START_DATE_PE, START_TIME_PE, START_DATE_ES, START_TIME_ES)
+    data = convert_timezone_columns(data, END_DATE_PE, END_TIME_PE, END_DATE_ES, END_TIME_ES)
+    data = convert_timezone_columns(data, BREAK_START_DATE_PE, BREAK_START_TIME_PE, BREAK_START_DATE_ES, BREAK_START_TIME_ES)
+    data = convert_timezone_columns(data, BREAK_END_DATE_PE, BREAK_END_TIME_PE, BREAK_END_DATE_ES, BREAK_END_TIME_ES)
 
     return data[
         [

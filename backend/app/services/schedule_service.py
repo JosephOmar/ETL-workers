@@ -15,7 +15,6 @@ async def process_and_persist_schedules(
     year: int | None = None,
 ) -> dict:
     try:
-        print('xd1')
         df = await handle_file_upload_generic(
             files=files,
             validator=validate_excel_schedule,

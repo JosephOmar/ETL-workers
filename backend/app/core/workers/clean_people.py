@@ -95,9 +95,6 @@ def clean_people(data_active: pd.DataFrame, data_inactive: pd.DataFrame) -> pd.D
     for col in [NAME, MANAGER, SUPERVISOR, COORDINATOR]:
         data[col] = data[col].fillna('').str.title().str.strip()
 
-    for col in [MANAGER, SUPERVISOR, COORDINATOR]:
-        data = update_column_based_on_worker(data, data, col, NAME)
-
     data[START_DATE] = pd.to_datetime(data[START_DATE], errors='coerce')
 
     now = pd.Timestamp.now()

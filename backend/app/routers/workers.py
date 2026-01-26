@@ -31,12 +31,18 @@ async def upload_workers(
     summary="Lista todos los trabajadores con sus horarios"
 )
 async def read_workers(session: AsyncSession = Depends(get_session)):
-
     try:
         peru_tz = timezone(timedelta(hours=-5))
-        current_day = datetime.now(peru_tz).date()
-        next_day = current_day + timedelta(days=1)
-        previous_day = current_day - timedelta(days=1)
+        base_date = datetime.now(peru_tz).date()
+
+        days_before = 5
+        days_after = 1
+
+        date_range = [
+            base_date + timedelta(days=i)
+            for i in range(-days_before, days_after + 1)
+        ]
+
         statement = (
             select(Worker)
             .options(
@@ -50,20 +56,26 @@ async def read_workers(session: AsyncSession = Depends(get_session)):
                     .selectinload(Schedule.attendances),
                 with_loader_criteria(
                     Schedule,
-                    Schedule.start_date_pe.in_([next_day, current_day, previous_day])),
+                    Schedule.start_date_pe.in_(date_range)
+                ),
             )
         )
+
         result = await session.exec(statement)
         workers = result.all()
 
+        # Seguridad extra
         for worker in workers:
             for schedule in worker.schedules:
                 if schedule.attendances is None:
                     schedule.attendances = []
 
         return workers
+
     except Exception as e:
         print(f"{e} xd")
+        raise
+
 
 @router.post("/truncate-workers/")
 async def truncate_workers(session: AsyncSession = Depends(get_session)):
