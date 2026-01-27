@@ -27,7 +27,7 @@ export const buildElevatedThtChatMessage: MessageBuilder= ({
 }): string =>
   [
     buildFirstLine(worker, contractLabel),
-    `⚠️ ${bold(worker.name ?? "NOMBRE DESCONOCIDO")} con atención lenta en caso asignado`,
+    `⚠️ ${bold(worker.name ?? "NOMBRE DESCONOCIDO")}, THT elevado en caso asignado`,
     `⏰ ${bold("Gestión:")} ${diffSec}s (${hmsStr})`,
     `🔗 ${bold("Link:")} ${url}`,
     buildSupervisorLine(worker),

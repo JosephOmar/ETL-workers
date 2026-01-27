@@ -2,27 +2,20 @@
 "use client";
 import React from "react";
 import { Bar } from "react-chartjs-2";
-import type { AgentAdherenceRow } from "@/components/types/adherence-report.type";
+import type { AgentsBelow90ByCoordinator } from "@/components/types/adherence-report.type";
 
 interface Props {
-  agents: AgentAdherenceRow[];
+  dataChart: AgentsBelow90ByCoordinator[];
 }
 
-export const AgentsByCoordinatorBar: React.FC<Props> = ({ agents }) => {
-  const coordinators = Array.from(new Set(agents.map((a) => a.coordinator).filter(Boolean)));
-
-  const counts = coordinators.map((coord) => {
-    const coordAgents = agents.filter((a) => a.coordinator === coord);
-    const below90 = coordAgents.filter((a) => a.adherence < 90).length;
-    return { coordinator: coord!, below90 };
-  });
+export const AgentsByCoordinatorBar: React.FC<Props> = ({ dataChart }) => {
 
   const data = {
-    labels: counts.map((c) => c.coordinator),
+    labels: dataChart.map((data) => data.coordinator),
     datasets: [
       {
         label: "Agents With Adherence < 90%",
-        data: counts.map((c) => c.below90),
+        data: dataChart.map((data) => data.agents_below_90),
         backgroundColor: "#fbbf24",
       },
     ],

@@ -23,13 +23,14 @@ export function buildCapacityText(
   }
 
   const available = calculateAvailableAgents(team, agents, tickets);
+  const RealAvailable = available > 10 ? 10 : available;
 
   return (
     `Capacidad: ${team}\n\n` +
     `Total de Agentes: ${agents} Agentes.\n` +
     `Tickets: ${tickets} Tickets en gestión\n` +
     `Concurrencia: ${concurrency}\n\n` +
-    `Ag. Disponibles: ${available} para refuerzo`
+    `Ag. Disponibles: ${RealAvailable} para refuerzo`
   );
 }
 

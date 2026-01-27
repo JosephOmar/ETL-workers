@@ -124,9 +124,11 @@ export const CapacityProcessor = () => {
         r.tickets
       );
 
+      const realAvailable = available > 10 ? 10 : available;
+
       return `➡️ ${r.label} - Concurrencia: ${concurrency}. ${
-        available > 0
-          ? `Se tiene disponibilidad para sacar ${available} agentes para refuerzos.`
+        realAvailable > 0
+          ? `Se tiene disponibilidad para sacar ${realAvailable} agentes para refuerzos.`
           : `Sin agentes disponibles para refuerzos en el canal`
       }`;
     });

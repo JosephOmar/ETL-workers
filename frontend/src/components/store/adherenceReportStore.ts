@@ -15,12 +15,12 @@ interface AdherenceReportState {
 
   dateFrom: string;
   dateTo: string;
-  teamName?: string; // <-- CAMBIO: antes era teamId
+  teamName?: string;
   coordinator?: string;
 
   setDateFrom: (date: string) => void;
   setDateTo: (date: string) => void;
-  setTeamName: (name?: string) => void; // <-- CAMBIO
+  setTeamName: (name?: string) => void;
   setCoordinator: (name?: string) => void;
 
   fetchReport: (forceRefresh?: boolean, silent?: boolean) => Promise<void>;
@@ -35,12 +35,12 @@ export const useAdherenceReportStore = create<AdherenceReportState>(
 
     dateFrom: new Date().toISOString().slice(0, 10),
     dateTo: new Date().toISOString().slice(0, 10),
-    teamName: undefined, // <-- CAMBIO
+    teamName: undefined,
     coordinator: undefined,
 
     setDateFrom: (date) => set({ dateFrom: date }),
     setDateTo: (date) => set({ dateTo: date }),
-    setTeamName: (name) => set({ teamName: name }), // <-- CAMBIO
+    setTeamName: (name) => set({ teamName: name }),
     setCoordinator: (name) => set({ coordinator: name }),
 
     clearReport: () => set({ report: null }),
@@ -48,7 +48,7 @@ export const useAdherenceReportStore = create<AdherenceReportState>(
     fetchReport: async (forceRefresh = false, silent = false) => {
       if (!silent) set({ loading: true, error: null });
 
-      const { dateFrom, dateTo, teamName, coordinator } = get(); // <-- CAMBIO
+      const { dateFrom, dateTo, teamName, coordinator } = get();
       const cacheKey = "adherence_last";
 
       try {
@@ -67,7 +67,7 @@ export const useAdherenceReportStore = create<AdherenceReportState>(
           date_to: dateTo,
         });
 
-        if (teamName) params.append("team_name", teamName); // <-- CAMBIO
+        if (teamName) params.append("team_name", teamName);
         if (coordinator) params.append("coordinator", coordinator);
 
         const res = await fetch(

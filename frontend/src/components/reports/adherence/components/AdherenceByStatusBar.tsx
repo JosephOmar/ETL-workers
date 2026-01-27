@@ -24,12 +24,12 @@ export const AdherenceByStatusBar: React.FC<Props> = ({ agents }) => {
   });
 
   const data = {
-    labels: ["Medium (90-80)", "High (80-70)", "Critical (<70)"],
+    labels: ["x ≤ 70%", "70% < x ≤ 80%", "80% < x ≤ 90%"],
     datasets: [
       {
         label: "Agentes",
-        data: [statusBuckets.Medium, statusBuckets.High, statusBuckets.Critical],
-        backgroundColor: ["#34d399", "#60a5fa", "#f87171"],
+        data: [statusBuckets.Critical, statusBuckets.High,  statusBuckets.Medium],
+        backgroundColor: ["#f87171","#60a5fa","#34d399"],
       },
     ],
   };
@@ -38,7 +38,15 @@ export const AdherenceByStatusBar: React.FC<Props> = ({ agents }) => {
     responsive: true,
     plugins: {
       legend: {
-        position: "bottom" as const, // <--- tipado literal
+        position: "bottom" as const,
+        labels: {
+          font: {
+            size: 16,
+            weight: 600,
+          },
+          padding: 20,
+          boxWidth: 20,
+        },
       },
       datalabels: {
         color: "#000",
@@ -46,6 +54,23 @@ export const AdherenceByStatusBar: React.FC<Props> = ({ agents }) => {
         font: {
           weight: "bold" as const,
           size: 14,
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          font: {
+            size: 16,       // 👈 tamaño de "Medium / High / Critical"
+            weight: 600,    // opcional
+          },
+        },
+      },
+      y: {
+        ticks: {
+          font: {
+            size: 14,
+          },
         },
       },
     },

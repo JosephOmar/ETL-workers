@@ -12,13 +12,30 @@ export interface PenaltyByStatus {
   avg_penalty_minutes: number;
 }
 
+export interface AgentsBelow90ByTeam {
+  team: string;
+  agents_below_90: number;
+  total_agents: number,
+  affected_pct: number,
+}
+
+export interface AgentsBelow90ByCoordinator {
+  coordinator: string;
+  agents_below_90: number;
+}
+
+export interface DeviationReasonDonut {
+  main_deviation_reason: string;
+  agents_count: number;
+}
+
 export interface AgentAdherenceRow {
   document: string;
   name: string;
   email?: string;
   team: string;
-  coordinator?: string;
-  supervisor?: string;
+  coordinator: string;
+  supervisor: string;
   date: string;
   adherence: number;
   adherence_status: string;
@@ -35,9 +52,9 @@ export interface AdherenceReportResponse {
   kpis: KPIBlock;
   charts: {
     penalty_by_status: PenaltyByStatus[];
-    agents_below_90_by_team?: any[];
-    agents_below_90_by_coordinator?: any[];
-    deviation_reason_donut?: any[];
+    agents_below_90_by_team: AgentsBelow90ByTeam[];
+    agents_below_90_by_coordinator: AgentsBelow90ByCoordinator[];
+    deviation_reason_donut: DeviationReasonDonut[];
   };
   agents: AgentAdherenceRow[];
 }

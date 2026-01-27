@@ -18,7 +18,7 @@ export const KpiCards: React.FC<KpiCardsProps> = ({ kpis }) => {
         <p className="text-2xl font-bold">{kpis.agents_below_90}</p>
       </div>
       <div className="text-center">
-        <p className="text-sm font-medium">Critical Adhesion Agents (&lt; 70%)</p>
+        <p className="text-sm font-medium">Agents With Adherence Critical (&lt; 70%)</p>
         <p className="text-2xl font-bold">{kpis.critical_agents}</p>
       </div>
       <div className="text-center">
