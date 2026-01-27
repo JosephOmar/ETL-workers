@@ -62,6 +62,13 @@ def get_kpi_block(date_from, date_to, team_names=None, coordinator=None):
 # Charts
 # -----------------------------
 def get_penalty_by_status(date_from, date_to, team_names=None, coordinator=None):
+    order_case = case(
+        (Attendance.adherence_status == "Critical", 1),
+        (Attendance.adherence_status == "High", 2),
+        (Attendance.adherence_status == "Medium", 3),
+        (Attendance.adherence_status == "Low", 4),
+        else_=5,
+    )
     stmt = (
         select(
             Attendance.adherence_status,
@@ -69,6 +76,7 @@ def get_penalty_by_status(date_from, date_to, team_names=None, coordinator=None)
         )
         .select_from(Attendance)
         .group_by(Attendance.adherence_status)
+        .order_by(order_case) 
     )
     return apply_base_filters(stmt, date_from, date_to, team_names, coordinator)
 
