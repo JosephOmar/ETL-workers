@@ -54,17 +54,12 @@ export const filterByAttendance =
     if (attendance.length === 0) return true;
 
     let record: Attendance | undefined;
-    console.log(attendance)
-    console.log(date)
-    // console.log(evaluationDateTime)
     if (evaluationDateTime) {
       const schedule = worker.schedules.find(
         isAgentWorkingAt(evaluationDateTime, filterZone)
       );
       record = schedule?.attendances?.[0];
     } else {
-      // if(worker.schedules[1].attendances[0]?.status === 'Present')
-      //   console.log(worker)
       const schedule = worker.schedules.find((s) =>
         filterZone === "PE"
           ? s.start_date_pe === date

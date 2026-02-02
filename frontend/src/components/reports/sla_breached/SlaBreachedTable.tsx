@@ -5,6 +5,7 @@ import { useSlaBreachedReportStore } from "@/components/store/slaBreachedReportS
 import { CopyImageButton } from "@/components/utils/CopyImagenButton";
 import { UploadSlaBreachedButton } from "./UploadSlaBreachedButton";
 import { DailyCoordinatorSummary } from "./DailyCoordinatorSummary";
+import { bold } from "@/components/ui/toUnicodeBold";
 
 const TEAMS = [
   "Customer Tier1",
@@ -112,18 +113,18 @@ export const SlaBreachedTable = () => {
   const buildClipboardText = () => {
     const zoneLabel = zone === "PE" ? "HP" : "HE";
 
-    let text = `📌 Chats Vencidos `;
+    let text = bold(`📌 Chats Vencidos | `);
 
     if (isDailySummary) {
-      text += `Resumen diario completo - ${zoneLabel}\n\n`;
+      text += bold(`Resumen diario - ${zoneLabel}\n\n`);
     } else {
-      text += `${hour ? `Tramo ${hour} - ${hour.slice(0, 2)}:59` : ""} ${zoneLabel}\n\n`;
+      text += bold(`${hour ? `Tramo ${hour} - ${hour.slice(0, 2)}:59` : ""} ${zoneLabel}\n\n`);
     }
 
-    text += `⚠️ ${agentsWithBreached} As con +1 chat vencido.\n`;
-    text += `🚨 ${totalChats} chats vencidos en el tramo.\n\n`;
+    text += `⚠️ ${agentsWithBreached} As presentan más de 1 chat vencido.\n`;
+    text += `🚨 ${totalChats} chats fuera de SLA en el tramo.\n\n`;
 
-    text += `Top Supervisores\n\n`;
+    text += bold(`Top Supervisores con mayor impacto:\n\n`);
     topSupervisors.forEach(([name, total]) => {
       text += `${name}: ${total} casos fuera de SLA\n`;
     });
@@ -135,7 +136,7 @@ export const SlaBreachedTable = () => {
       });
     }
 
-    text += `\n🚨Su apoyo reforzando los tiempos de saludo🚨`;
+    text += bold(`\n🚨Solicitamos su apoyo reforzando los tiempos de saludo para reducir los vencimientos.🚨`);
 
     return text;
   };

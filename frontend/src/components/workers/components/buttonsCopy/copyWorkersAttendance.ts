@@ -12,11 +12,11 @@ export const copyWorkersAttendance = (workers: Worker[], filterDate: string) => 
         w.document,
         w.name,
         attendance?.status ?? "Absent",
+        w.api_email
       ];
     },
     {
       includeHeader: true,
-      header: ["Document", "Name", "Attendance"],
     }
   );
 };

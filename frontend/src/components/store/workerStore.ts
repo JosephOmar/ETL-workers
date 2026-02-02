@@ -54,9 +54,9 @@ export const useWorkersStore = create<WorkersState>((set, get) => ({
   loading: false,
   error: null,
 
-  filterDate: "",
+  filterDate: new Date().toLocaleDateString("en-CA", {timeZone: "America/Lima"}),
   filterZone: "PE",
-  filterTeams: [],
+  filterTeams: ALL_TEAMS,
   filterContract: [],
   filterAttendance: [],
   searchText: "",
@@ -66,7 +66,10 @@ export const useWorkersStore = create<WorkersState>((set, get) => ({
   filterAdherenceBelow: false,
   filterProductive: false,
 
-  setFilterDate: (date) => set({ filterDate: date }),
+  setFilterDate: (date) => {
+    date == "Select Date" ? date = "" : ""
+    set({ filterDate: date })
+  },
   setFilterZone: (zone) => set({ filterZone: zone }),
   setFilterTeams: (teams) => {
     if (teams.includes("All")) {
@@ -130,7 +133,9 @@ export const useWorkersStore = create<WorkersState>((set, get) => ({
       filterContract: [],
       filterAttendance: [],
       searchText: "",
-      searchField: "email",
+      searchField: "document",
+      filterAdherenceBelow: false,
+      filterProductive: false,
     }),
 
   fetchWorkers: async (forceRefresh = false) => {

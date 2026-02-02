@@ -12,7 +12,7 @@ export const WorkersActionsBar = () => {
 
   return (
     <div className="flex gap-3 mb-4">
-      <TruncateWorkersButton onAfterTruncate={refresh} />
+      {/* <TruncateWorkersButton onAfterTruncate={refresh} /> */}
       <UploadWorkersButton onAfterUpload={refresh} />
       <UploadSchedulesButton onAfterUpload={refresh} />
       <UploadAttendanceButton onAfterUpload={refresh} />

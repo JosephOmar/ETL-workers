@@ -42,6 +42,13 @@ export const WorkersBulkSearch = () => {
         >
           Email
         </button>
+
+        <button
+          onClick={() => setSearchText("")}
+          className={`btn-grad ${baseBtn}`}
+        >
+          Clean
+        </button>
       </div>
     </div>
   );
