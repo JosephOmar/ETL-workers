@@ -40,14 +40,7 @@ export function getPeruRoundedTime(): string {
   let roundedHour = hour;
   let roundedMinute: number;
 
-  if (minute < 5) {
-    roundedMinute = 35;
-    roundedHour = (hour - 1 + 24) % 24;
-  } else if (minute < 35) {
-    roundedMinute = 5;
-  } else {
-    roundedMinute = 35;
-  }
+  roundedMinute = minute > 29 ? 35 : 5;
 
   return `${roundedHour.toString().padStart(2, "0")}:${roundedMinute
     .toString()
