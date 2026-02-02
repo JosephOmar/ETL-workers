@@ -38,6 +38,7 @@ async def get_sla_breached_report(
             SlaBreached.date_pe.between(from_date, today_pe)
         )
         .order_by(
+            Worker.supervisor.asc(),
             SlaBreached.date_pe.desc(),
             SlaBreached.interval_pe
         )

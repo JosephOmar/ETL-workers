@@ -73,9 +73,7 @@ def clean_schedule_concentrix(
         date_col = current_date.strftime("%d/%m/%Y")
         if date_col in data_obs.columns:
             obs_map = data_obs.set_index("NRO_DOCUMENTO")[date_col]
-            print(obs_map)
             sub[OBS] = sub[DOCUMENT].map(obs_map)
-            print(sub[OBS].dropna().unique())
             sub[OBS] = sub[OBS].astype(object)
             mask_valid = sub[OBS].str.match(r"^(?!FLT$)[A-Za-z]{3}$")
             sub[OBS] = sub[OBS].where(mask_valid, None)

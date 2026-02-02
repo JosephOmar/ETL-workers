@@ -16,7 +16,6 @@ ALLOWED_TEAMS_FOR_ADHERENCE = [
 ]
 
 def apply_allowed_teams_filter(stmt: Select) -> Select:
-    """Filtro obligatorio: solo equipos válidos para adherence"""
     return stmt.where(Team.name.in_(ALLOWED_TEAMS_FOR_ADHERENCE))
 
 def apply_worker_filters(
@@ -24,9 +23,7 @@ def apply_worker_filters(
     team_names: Optional[list[str]] = None,
     coordinator: Optional[str] = None,
 ) -> Select:
-    """Filtra por nombres de equipo y/o coordinador"""
     if team_names:
-        # Si solo envías un string, convertir a lista
         if isinstance(team_names, str):
             team_names = [team_names]
         stmt = stmt.where(Team.name.in_(team_names))
