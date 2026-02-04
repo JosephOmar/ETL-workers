@@ -17,6 +17,7 @@ export function UploadSchedulesButton({
         { key: "peopleObs", label: "people_obs" },
         { key: "scheduleConcentrix", label: "schedule_concentrix" },
         { key: "scheduleUbycall", label: "schedule_ubycall" },
+        { key: "schedulePPP", label: "schedule_ppp" },
       ]}
       onAfterUpload={onAfterUpload}
     />

@@ -16,7 +16,7 @@ export const copyWorkersAttendance = (workers: Worker[], filterDate: string) => 
       ];
     },
     {
-      includeHeader: true,
+      includeHeader: false,
     }
   );
 };

@@ -126,91 +126,98 @@ export const WorkersTableColumns = ({
         return schedule?.obs ?? ''
       },
     },
-    {
-      key: "attendance",
-      header: "Attendance",
-      render: (w) => {
-        const schedule = getEffectiveSchedule(w)
-        const attendance = getAttendanceFromSchedule(schedule, filterZone);
-        const status = attendance?.status || "Absent";
+    // {
+    //   key: "attendance",
+    //   header: "Attendance",
+    //   render: (w) => {
+    //     const schedule = getEffectiveSchedule(w)
+    //     const attendance = getAttendanceFromSchedule(schedule, filterZone);
+    //     const status = attendance?.status || "Absent";
 
-        const statusClass = (() => {
-          switch (status) {
-            case "Present":
-              return "text-green-500 font-semibold";
-            case "Late":
-              return "text-orange-500 font-semibold";
-            case "Absent":
-              return "text-red-500 font-semibold";
-            default:
-              return "";
-          }
-        })();
+    //     const statusClass = (() => {
+    //       switch (status) {
+    //         case "Present":
+    //           return "text-green-500 font-semibold";
+    //         case "Late":
+    //           return "text-orange-500 font-semibold";
+    //         case "Absent":
+    //           return "text-red-500 font-semibold";
+    //         default:
+    //           return "";
+    //       }
+    //     })();
 
-        return <span className={statusClass}>{status}</span>;
-      },
-    },
-    {
-      key: "checkIn",
-      header: "Check In",
-      render: (w) => {
-        const schedule = getEffectiveSchedule(w)
+    //     return <span className={statusClass}>{status}</span>;
+    //   },
+    // },
+    // {
+    //   key: "checkIn",
+    //   header: "Check In",
+    //   render: (w) => {
+    //     const schedule = getEffectiveSchedule(w)
 
-        return getAttendanceFromSchedule(schedule, filterZone)?.check_in || "-";
-      },
-    },
-    {
-      key: "checkOut",
-      header: "Check Out",
-      render: (w) => {
-        const schedule = getEffectiveSchedule(w)
+    //     return getAttendanceFromSchedule(schedule, filterZone)?.check_in || "-";
+    //   },
+    // },
+    // {
+    //   key: "checkOut",
+    //   header: "Check Out",
+    //   render: (w) => {
+    //     const schedule = getEffectiveSchedule(w)
 
-        return getAttendanceFromSchedule(schedule, filterZone)?.check_out || "-";
-      },
-    },
-    {
-      key: "adherence",
-      header: "Adherence",
-      sortable: true,
-      sortValue: (w) => {
-        const schedule = getEffectiveSchedule(w)
+    //     return getAttendanceFromSchedule(schedule, filterZone)?.check_out || "-";
+    //   },
+    // },
+    // {
+    //   key: "adherence",
+    //   header: "Adherence",
+    //   sortable: true,
+    //   sortValue: (w) => {
+    //     const schedule = getEffectiveSchedule(w)
 
-        const a = getAttendanceFromSchedule(schedule, filterZone);
-        return a?.adherence != null ? a.adherence: 0;
-      },
-      render: (w) => {
-        const schedule = getEffectiveSchedule(w)
+    //     const a = getAttendanceFromSchedule(schedule, filterZone);
+    //     return a?.adherence != null ? a.adherence: 0;
+    //   },
+    //   render: (w) => {
+    //     const schedule = getEffectiveSchedule(w)
 
-        const a = getAttendanceFromSchedule(schedule, filterZone);
-        const adherence = a?.adherence != null ? a.adherence : 0;
+    //     const a = getAttendanceFromSchedule(schedule, filterZone);
+    //     const adherence = a?.adherence != null ? a.adherence : 0;
 
-        const adherenceClass = adherence < 90 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
+    //     const adherenceClass = adherence < 90 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
 
-        return <span className={adherenceClass}>{adherence}%</span>;
-      },
-    },
-    {
-      key: "auxNoProductive",
-      header: "Aux No Productive",
-      sortable: true,
-      sortValue: (w) => {
-        const schedule = getEffectiveSchedule(w)
-        const a = getAttendanceFromSchedule(schedule, filterZone);
-        return a?.time_aux_no_productive ?? 0;
-      },
-      render: (w) => {
-        const schedule = getEffectiveSchedule(w)
-        const attendance = getAttendanceFromSchedule(schedule, filterZone)
-        const aux_no_productive =  attendance?.time_aux_no_productive || 0;
-        const auxClass = aux_no_productive > 20 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
+    //     return <span className={adherenceClass}>{adherence}%</span>;
+    //   },
+    // },
+    // {
+    //   key: "auxNoProductive",
+    //   header: "Aux No Productive",
+    //   sortable: true,
+    //   sortValue: (w) => {
+    //     const schedule = getEffectiveSchedule(w)
+    //     const a = getAttendanceFromSchedule(schedule, filterZone);
+    //     return a?.time_aux_no_productive ?? 0;
+    //   },
+    //   render: (w) => {
+    //     const schedule = getEffectiveSchedule(w)
+    //     const attendance = getAttendanceFromSchedule(schedule, filterZone)
+    //     const aux_no_productive =  attendance?.time_aux_no_productive || 0;
+    //     const auxClass = aux_no_productive > 20 ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'
 
-        return <span className={auxClass}>{aux_no_productive}</span>;
-      },
-    },
+    //     return <span className={auxClass}>{aux_no_productive}</span>;
+    //   },
+    // },
     {
       key: "email",
       header: "Email",
       render: (w) => w.api_email ?? "N/A",
+    },
+    {
+      key: "termination_date",
+      header: "Termination Date",
+      sortable: true,
+      sortValue: (w) => w.termination_date ? new Date(w.termination_date).getTime() : null,
+      render: (w) => w.termination_date ?? "",
     },
   ];
 };

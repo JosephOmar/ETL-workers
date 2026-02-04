@@ -1,17 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useWorkersStore } from "../store/workerStore";
-import type { Worker } from "../types/worker.type";
-import type { Schedule } from "../types/schedule.type";
-import { TruncateWorkersButton } from "./components/buttons/TruncateWorkersButton";
 import { Button } from "@components/ui/button";
 import WorkersDateFilter from "./components/filters/WorkerDateFilter";
-import UpdateWorkersButton from "./components/buttons/UpdateWorkersButton";
-import FilesForUploadWorkersButton from "./components/buttons/FilesForUploadWorkersButton";
 import WorkersZoneFilter from "./components/filters/WorkersZoneFilter";
-import { UploadSchedulesButton } from "./components/buttons/UploadSchedulesButton";
-import { UploadWorkersButton } from "./components/buttons/UploadWorkersButton";
 import { WorkersTableColumns } from "./components/utils/WorkersTableColumns";
-import { UploadAttendanceButton } from "./components/buttons/UploadAttendanceButton";
 import WorkersTeamFilter from "./components/filters/WorkersTeamFilter";
 import WorkersContractFilter from "./components/filters/WorkersContractFilter";
 import WorkersAttendanceFilter from "./components/filters/WorkerAttendanceFilter";
@@ -29,6 +21,8 @@ import WorkersAdherenceFilter from "./components/filters/WorkersAdherenceFilter"
 import WorkersProductiveFilter from "./components/filters/WorkersProductiveFilter";
 import { copyWorkersAttendance } from "./components/buttonsCopy/copyWorkersAttendance";
 import { copyWorkersSchedules } from "./components/buttonsCopy/copyWorkersSchedules";
+import { copyWorkersInPersonAttendance } from "./components/buttonsCopy/copyWorkersInPersonAttendance";
+import { copyWorkersPilotFormat } from "./components/buttonsCopy/copyWorkersPilotFormat";
 import { getEvaluationDateTime } from "./components/utils/helpersWorkersTableColumns";
 import { copyWorkerUrlApi } from "./components/buttonsCopy/copyWorkersUrlApi";
 
@@ -87,12 +81,18 @@ const WorkersTable: React.FC = () => {
       <div className="flex gap-4">
         <h2 className="text-2xl font-bold mb-4">Workers List - {workers.length}</h2>
         <ClearFiltersButton />
-        <Button className="btn-grad text-black" onClick={() => copyWorkersAttendance(workers, filterDate)}>
+        {/* <Button className="btn-grad text-black" onClick={() => copyWorkersAttendance(workers, filterDate)}>
           Copy Attendance
+        </Button> */}
+        <Button className="btn-grad text-black" onClick={() => copyWorkersInPersonAttendance(workers)}>
+          Copy In Person Attendance
         </Button>
-        <Button className="btn-grad text-black" onClick={() => copyWorkersSchedules(workers, filterDate)}>
+        <Button className="btn-grad text-black" onClick={() => copyWorkersPilotFormat(workers)}>
+          Copy Pilot Format
+        </Button>
+        {/* <Button className="btn-grad text-black" onClick={() => copyWorkersSchedules(workers, filterDate)}>
           Copy Schedules
-        </Button>
+        </Button> */}
         <Button className="btn-grad text-black" onClick={() => copyWorkerUrlApi(workers)}>
           Copy Url
         </Button>

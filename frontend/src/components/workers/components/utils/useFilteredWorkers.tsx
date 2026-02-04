@@ -3,6 +3,7 @@ import { filterByDate, filterByAttendance, filterByContract, filterByTeam, filte
 import { filterByBulkSearch } from "../search/filterByBulkSearch";
 import { useMemo } from "react";
 import { getEvaluationDateTime } from "./helpersWorkersTableColumns";
+import { sortByBulkOrder } from "./useTableSort";
 
 export const useFilteredWorkers = () => {
   const workers = useWorkersStore(s => s.workers);
@@ -37,7 +38,7 @@ export const useFilteredWorkers = () => {
       .filter(filterByAttendance(filterAttendance, filterDate, evaluationDateTime, filterZone))
       .filter(filterByBulkSearch(searchText, searchField))
       .filter((w) => !filterAdherenceBelow || filterByAdherence(90, filterDate, evaluationDateTime, filterZone)(w))
-      console.log(workersFiltered)
+      .sort(sortByBulkOrder(searchText, searchField));
       return workersFiltered
   }, [
     workers,

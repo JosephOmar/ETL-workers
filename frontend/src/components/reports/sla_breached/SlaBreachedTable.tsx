@@ -19,6 +19,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) =>
 );
 
 type Zone = "PE" | "ES";
+type SortDirection = "asc" | "desc";
 
 const ZONES: { label: string; value: Zone }[] = [
   { label: "Perú", value: "PE" },
@@ -36,7 +37,6 @@ const getTopByField = (
   data.forEach((row) => {
     const key = row[field];
     if (!key) return;
-
     map.set(key, (map.get(key) ?? 0) + row.chat_breached);
   });
 
@@ -55,6 +55,9 @@ export const SlaBreachedTable = () => {
   const [hour, setHour] = useState<string>("");
   const [zone, setZone] = useState<Zone>("PE");
 
+  // 🔹 Estado de orden
+  const [sortChats, setSortChats] = useState<SortDirection>("desc");
+
   useEffect(() => {
     fetchReport();
   }, [fetchReport]);
@@ -67,10 +70,8 @@ export const SlaBreachedTable = () => {
 
     return report.filter((row) => {
       if (team && row.team !== team) return false;
-
       if (date && row[dateField] !== date) return false;
 
-      // 🔹 si no hay hora seleccionada → no filtrar por intervalo
       if (!hour) return true;
 
       const interval = row[intervalField];
@@ -81,6 +82,17 @@ export const SlaBreachedTable = () => {
   }, [report, team, date, hour, zone]);
 
   const isDailySummary = !hour;
+
+  // 🔹 Datos ordenados por Chats Breached
+  const sortedData = useMemo(() => {
+    if (!filteredData.length) return [];
+
+    return [...filteredData].sort((a, b) =>
+      sortChats === "asc"
+        ? a.chat_breached - b.chat_breached
+        : b.chat_breached - a.chat_breached
+    );
+  }, [filteredData, sortChats]);
 
   const totalChats = useMemo(
     () => filteredData.reduce((sum, r) => sum + r.chat_breached, 0),
@@ -118,7 +130,9 @@ export const SlaBreachedTable = () => {
     if (isDailySummary) {
       text += bold(`Resumen diario - ${zoneLabel}\n\n`);
     } else {
-      text += bold(`${hour ? `Tramo ${hour} - ${hour.slice(0, 2)}:59` : ""} ${zoneLabel}\n\n`);
+      text += bold(
+        `${hour ? `Tramo ${hour} - ${hour.slice(0, 2)}:59` : ""} ${zoneLabel}\n\n`
+      );
     }
 
     text += `⚠️ ${agentsWithBreached} As presentan más de 1 chat vencido.\n`;
@@ -136,7 +150,9 @@ export const SlaBreachedTable = () => {
       });
     }
 
-    text += bold(`\n🚨Solicitamos su apoyo reforzando los tiempos de saludo para reducir los vencimientos.🚨`);
+    text += bold(
+      `\n🚨Solicitamos su apoyo reforzando los tiempos de saludo para reducir los vencimientos.🚨`
+    );
 
     return text;
   };
@@ -151,7 +167,11 @@ export const SlaBreachedTable = () => {
           ))}
         </select>
 
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
 
         <select value={hour} onChange={(e) => setHour(e.target.value)}>
           <option value="">Todas las horas</option>
@@ -162,22 +182,20 @@ export const SlaBreachedTable = () => {
           ))}
         </select>
 
-
-        <select value={zone} onChange={(e) => setZone(e.target.value as Zone)}>
+        <select
+          value={zone}
+          onChange={(e) => setZone(e.target.value as Zone)}
+        >
           {ZONES.map((z) => (
             <option key={z.value} value={z.value}>
               {z.label}
             </option>
           ))}
         </select>
-
       </div>
 
       <div className="flex gap-2 mb-3 w-[80%] mx-auto">
-        <CopyImageButton
-          targetId="sla-breached-table"
-          label="📸 Copiar tabla"
-        />
+        <CopyImageButton targetId="sla-breached-table" label="📸 Copiar tabla" />
 
         <button
           className="border px-3 py-1"
@@ -187,36 +205,55 @@ export const SlaBreachedTable = () => {
         >
           📋 Copiar resumen
         </button>
-        <UploadSlaBreachedButton onAfterUpload={() => {fetchReport(true)}}/>
+
+        <UploadSlaBreachedButton
+          onAfterUpload={() => {
+            fetchReport(true);
+          }}
+        />
       </div>
-      {
-        hour && (
-          <div id="sla-breached-table" className="w-[80%] mx-auto py-4">
-            <table className="w-full border">
-              <thead>
-                <tr>
-                  <th> Hora ({zone === "PE" ? "Perú" : "España"})</th>
-                  <th>Agente</th>
-                  <th>Supervisor</th>
-                  <th>Coordinator</th>
-                  <th>Chats Breached</th>
+
+      {hour && (
+        <div id="sla-breached-table" className="w-[80%] mx-auto py-4">
+          <table className="w-full border">
+            <thead>
+              <tr>
+                <th>Hora ({zone === "PE" ? "Perú" : "España"})</th>
+                <th>Agente</th>
+                <th>Supervisor</th>
+                <th>Coordinator</th>
+                <th
+                  className="cursor-pointer select-none"
+                  onClick={() =>
+                    setSortChats((prev) =>
+                      prev === "asc" ? "desc" : "asc"
+                    )
+                  }
+                >
+                  Chats Breached {sortChats === "asc" ? "⬆️" : "⬇️"}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedData.map((row, i) => (
+                <tr
+                  key={i}
+                  className={`${
+                    row.chat_breached > 1 ? "text-red-500" : ""
+                  } text-center`}
+                >
+                  <td>{zone === "PE" ? row.interval_pe : row.interval_es}</td>
+                  <td>{row.agent}</td>
+                  <td>{row.supervisor}</td>
+                  <td>{row.coordinator ?? "-"}</td>
+                  <td>{row.chat_breached}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((row, i) => (
-                  <tr key={i} className={`${row.chat_breached > 1 ? 'text-red-500' : ''} text-center`}>
-                    <td>{zone === "PE" ? row.interval_pe : row.interval_es}</td>
-                    <td>{row.agent}</td>
-                    <td>{row.supervisor}</td>
-                    <td>{row.coordinator ?? "-"}</td>
-                    <td>{row.chat_breached}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )
-      }
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {!hour && date && team && (
         <DailyCoordinatorSummary data={filteredData} />
       )}
