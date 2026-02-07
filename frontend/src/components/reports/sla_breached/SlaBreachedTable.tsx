@@ -136,15 +136,15 @@ export const SlaBreachedTable = () => {
     }
 
     text += `⚠️ ${agentsWithBreached} As presentan más de 1 chat vencido.\n`;
-    text += `🚨 ${totalChats} chats fuera de SLA en el tramo.\n\n`;
+    text += `${bold(`🚨 ${totalChats} chats fuera de SLA`)} en el tramo.\n\n`;
 
-    text += bold(`Top Supervisores con mayor impacto:\n\n`);
-    topSupervisors.forEach(([name, total]) => {
-      text += `${name}: ${total} casos fuera de SLA\n`;
+    text += bold(`TOP SUPERVISORES CON MAYOR IMPACTO:\n`);
+    topSupervisors.forEach(([name, total], index) => {
+      text += `${bold(`${index + 1}. ${name}`)}: ${total} casos perdidos por FRT\n\n`;
     });
 
     if (!hour && topCoordinators.length) {
-      text += `\nTop Responsables\n`;
+      text += `Top Responsables\n`;
       topCoordinators.forEach(([name, total]) => {
         text += `${name}: ${total} casos fuera de SLA\n`;
       });
