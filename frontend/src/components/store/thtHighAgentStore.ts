@@ -41,14 +41,14 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
     if (!silent) set({ loading: true, error: null });
 
     const { zone, date } = get();
-    const cacheKey = `tht_high_${zone}_${date}`;
+    const cacheKey = "tht_high_latest";
 
     try {
       if (!forceRefresh) {
         const cached =
           await thtHighAgentStorage.getItem<THTHighResponse>(cacheKey);
 
-        if (cached) {
+        if (cached && cached.intervals?.length > 0) {
           set({ data: cached, loading: false });
           return;
         }
@@ -64,7 +64,10 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
 
       const data: THTHighResponse = await res.json();
 
-      await thtHighAgentStorage.setItem(cacheKey, data);
+      if (data.intervals?.length > 0) {
+        await thtHighAgentStorage.removeItem(cacheKey);
+        await thtHighAgentStorage.setItem(cacheKey, data);
+      }
 
       set({ data, loading: false });
     } catch (err: any) {
