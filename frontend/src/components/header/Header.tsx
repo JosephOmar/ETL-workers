@@ -15,6 +15,7 @@ export function Header() {
             <DropdownLink href="/reports/adherence">Adherence</DropdownLink>
             <DropdownLink href="/reports/forecast-vs-real">Forecast vs Real</DropdownLink>
             <DropdownLink href="/reports/sla-breached">SLA Breached</DropdownLink>
+            <DropdownLink href="/reports/tht-high">THT High</DropdownLink>
           </Dropdown>
         </NavItem>
 

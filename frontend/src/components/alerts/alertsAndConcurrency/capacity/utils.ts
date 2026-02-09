@@ -4,7 +4,7 @@ export const QUEUE_NAME_MAP: Record<string, string> = {
   "CS-case-inbox-spa-ES-tier2": "Customer Tier2",
   "RS-case-inbox-spa-ES-tier2": "Rider Tier2",
   "VS-case-inbox-spa-ES-tier2": "Vendor Tier2",
-
+  "VS-case-inbox-spa-ES-disputes": "Vendor Tier2",
   "CS-chat-spa-ES-nonlive-order": "Customer Non Live",
   "CS-chat-spa-ES-live-order": "Customer Live",
 

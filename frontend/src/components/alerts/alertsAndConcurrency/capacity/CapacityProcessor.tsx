@@ -95,8 +95,21 @@ export const CapacityProcessor = () => {
       agents: r.agents,
     }));
 
-    const tier2Rows = queues
-      .filter(q => q.team.includes("Tier2"))
+    const tier2Queues = queues.filter(q => q.team.includes("Tier2"));
+    const vendorTier2Queues = queues.filter(q => q.team.includes("Vendor Tier2"));
+
+    const vendorTier2Row =
+    vendorTier2Queues.length > 0
+      ? [{
+          team: "Vendor Tier2",
+          backlog: vendorTier2Queues.reduce((s, q) => s + q.backlog, 0),
+          tickets: vendorTier2Queues.reduce((s, q) => s + q.tickets, 0),
+          agents: Math.max(...vendorTier2Queues.map(q => q.agents)),
+        }]
+      : [];
+
+    const otherTier2Rows = tier2Queues
+      .filter(q => !"Vendor Tier2".includes(q.team))
       .map(q => ({
         team: q.team,
         backlog: q.backlog,
@@ -104,7 +117,11 @@ export const CapacityProcessor = () => {
         agents: q.agents,
       }));
 
-    const allRows = [...tier1Rows, ...tier2Rows];
+    const allRows = [
+      ...tier1Rows,
+      ...otherTier2Rows,
+      ...vendorTier2Row,
+    ];
 
     return allRows.sort(
       (a, b) =>
