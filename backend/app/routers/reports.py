@@ -7,7 +7,10 @@ from app.reports.attendance.reportAttendanceService import build_adherence_repor
 from app.reports.attendance.reportAttendanceSchema import AdherenceReportResponse
 from app.reports.sla_breached.schema import SlaBreachedReportResponse
 from app.reports.sla_breached.service import fetch_sla_breached_report
-from typing import List
+from app.reports.contact_reason.service import get_contact_reasons
+from app.reports.tht_agents.service import get_tht_high_combined
+from app.reports.tht_agents.schema import THTHighResponse
+from typing import List, Literal
 
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
@@ -45,3 +48,24 @@ async def get_sla_breached_report_endpoint(
     session: AsyncSession = Depends(get_session)
 ):
     return await fetch_sla_breached_report(session)
+
+@router.get("/contact-reasons")
+async def contact_reasons(
+    # date_from: date,
+    # date_to: date,
+    session: AsyncSession = Depends(get_session)
+):
+    return await get_contact_reasons(session)
+
+@router.get("/tht-high", response_model=THTHighResponse)
+async def tht_high(
+    zone: Literal["PE", "ES"] = Query(...),
+    date: date = Query(...),
+    session: AsyncSession = Depends(get_session),
+):
+    return await get_tht_high_combined(
+        session=session,
+        zone=zone,
+        date_value=date,
+    )
+

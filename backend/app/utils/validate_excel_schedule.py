@@ -2,6 +2,7 @@ from app.utils.common import validate_and_map_filename
 
 SCHEDULE_MAPPING = {
     "schedule_concentrix": "schedule_concentrix",
+    "schedule_ppp": "schedule_ppp",
     "people_obs":          "people_obs",
     "schedule_ubycall": "schedule_ubycall"
 }

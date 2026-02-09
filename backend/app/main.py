@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends
-from app.routers import workers, schedules, attendance, reports, sla_breached
+from app.routers import workers, schedules, attendance, reports, sla_breached, contact_reason
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.database import get_session
 from app.database.migrate import run_migrations
@@ -38,6 +38,7 @@ app.include_router(schedules.router)
 app.include_router(attendance.router)
 app.include_router(reports.router)
 app.include_router(sla_breached.router)
+app.include_router(contact_reason.router)
 
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]

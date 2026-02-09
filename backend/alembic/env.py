@@ -18,6 +18,7 @@ from app.models.worker import Worker, Role, Status, Campaign, Team, WorkType, Co
 from app.models.schedule import Schedule
 from app.models.attendance import Attendance
 from app.models.sla_breached import SlaBreached
+from app.models.contact_reason import ContactsReason,ContactsReceived, THTHighByAgent
 
 config = context.config
 

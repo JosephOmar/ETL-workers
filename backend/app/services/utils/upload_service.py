@@ -41,7 +41,13 @@ EXCEL_READ_CONFIGS: Dict[str, Dict[str, Dict[str, Any]]] = {
             "header": 0,
             "engine": "openpyxl",
         },
-    }
+    },
+    "planned_data": {
+        "default": {
+            "sheet_name": "DDPP",
+            "engine": "openpyxl",
+        }
+    },
 }
 
 def read_file_safely(file_stream: io.BytesIO, filename: str) -> pd.DataFrame:

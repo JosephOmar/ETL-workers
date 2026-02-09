@@ -13,7 +13,6 @@ async def bulk_upsert_schedules_on_conflict(
     chunk_size: int = CHUNK_SIZE
 ):
     processed_days = set()
-
     for sched in schedules_data:
         document = sched["document"]
         start_date_pe = sched["start_date_pe"]

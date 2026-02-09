@@ -38,10 +38,8 @@ async def process_and_persist_attendance(
         )
 
         enriched_rows = await get_workers_and_schedule_for_attendance(session,df)
-
         records = []
         now = datetime.now(TZ)
-        print(enriched_rows[0])
         for row in enriched_rows:
 
             api_email = row["api_email"]

@@ -11,6 +11,7 @@ from app.models.schedule import Schedule
 from app.models.attendance import Attendance
 from datetime import datetime, timedelta, timezone
 from sqlmodel.ext.asyncio.session import AsyncSession
+from zoneinfo import ZoneInfo
 
 router = APIRouter()
 
@@ -25,6 +26,8 @@ async def upload_workers(
     )
     return {"message": f"Se insertaron {count} trabajadores correctamente."}
 
+TZ = ZoneInfo("America/Lima")
+
 @router.get(
     "/workers/",
     response_model=List[WorkerRead],
@@ -32,16 +35,15 @@ async def upload_workers(
 )
 async def read_workers(session: AsyncSession = Depends(get_session)):
     try:
-        peru_tz = timezone(timedelta(hours=-5))
-        base_date = datetime.now(peru_tz).date()
+        base_date = datetime.now(TZ).date()
 
-        days_before = 5
-        days_after = 1
+        monday = base_date - timedelta(days=base_date.weekday())
+        previous_sunday = monday - timedelta(days=1)
+        next_monday = monday + timedelta(days=7)
 
-        date_range = [
-            base_date + timedelta(days=i)
-            for i in range(-days_before, days_after + 1)
-        ]
+        date_range = [previous_sunday] + [
+            monday + timedelta(days=i) for i in range(7)
+        ] + [next_monday]
 
         statement = (
             select(Worker)
