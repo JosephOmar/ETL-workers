@@ -21,7 +21,7 @@ const TEAMS = [
 type Zone = "PE" | "ES";
 
 export const THTHighView = () => {
-  const { data, fetchReport, loading, zone, setZone, date, setDate } =
+  const { report, fetchReport, loading, zone, setZone, date, setDate } =
     useTHTHighAgentStore();
 
   const [hour, setHour] = useState("");
@@ -32,15 +32,15 @@ export const THTHighView = () => {
   }, [fetchReport, zone, date]);
 
   const selectedInterval = useMemo(() => {
-    if (!data || !hour || !team) return null;
+    if (!report || !hour || !team) return null;
 
-    return data.intervals.find((i) =>
+    return report.intervals.find((i) =>
       i.team === team &&
       (zone === "PE"
         ? i.interval_pe === hour
         : i.interval_es === hour)
     );
-  }, [data, hour, team, zone]);
+  }, [report, hour, team, zone]);
 
   return (
     <>
@@ -82,12 +82,14 @@ export const THTHighView = () => {
         </button>
       </div>
 
-      {/* Tablas */}
       {selectedInterval && (
         <>
           <THTHighSupervisorsTable
             data={selectedInterval.supervisors}
             loading={loading}
+            interval={hour}
+            zone={zone}
+            team={team}
           />
 
           <THTHighAgentsTable

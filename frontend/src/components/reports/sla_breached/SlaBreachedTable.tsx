@@ -211,6 +211,13 @@ export const SlaBreachedTable = () => {
             fetchReport(true);
           }}
         />
+        <button
+          onClick={() => fetchReport(true)}
+          disabled={loading}
+          className="px-3 py-1 rounded-lg bg-blue-600 text-white disabled:opacity-50"
+        >
+          🔄 Refresh
+        </button>
       </div>
 
       {hour && (

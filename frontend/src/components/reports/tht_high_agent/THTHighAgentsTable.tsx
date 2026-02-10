@@ -29,7 +29,7 @@ export const THTHighAgentsTable = ({ data, loading, interval, team, zone }: Prop
         <table className="w-full border">
           <thead>
             <tr>
-              <th>{team} - {interval} {zone}</th>
+              <th colSpan={3}>{team} - {interval} {zone}</th>
             </tr>
             <tr>
               <th>Agente</th>

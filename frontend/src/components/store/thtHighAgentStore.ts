@@ -8,7 +8,7 @@ export const thtHighAgentStorage = localforage.createInstance({
 });
 
 interface THTHighAgentState {
-  data: THTHighResponse | null;
+  report: THTHighResponse | null;
 
   loading: boolean;
   error: string | null;
@@ -24,7 +24,7 @@ interface THTHighAgentState {
 }
 
 export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
-  data: null,
+  report: null,
 
   loading: false,
   error: null,
@@ -35,7 +35,7 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
   setZone: (zone) => set({ zone }),
   setDate: (date) => set({ date }),
 
-  clearReport: () => set({ data: null }),
+  clearReport: () => set({ report: null }),
 
   fetchReport: async (forceRefresh = false, silent = false) => {
     if (!silent) set({ loading: true, error: null });
@@ -49,7 +49,7 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
           await thtHighAgentStorage.getItem<THTHighResponse>(cacheKey);
 
         if (cached && cached.intervals?.length > 0) {
-          set({ data: cached, loading: false });
+          set({ report: cached, loading: false });
           return;
         }
       }
@@ -69,7 +69,7 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
         await thtHighAgentStorage.setItem(cacheKey, data);
       }
 
-      set({ data, loading: false });
+      set({ report: data, loading: false });
     } catch (err: any) {
       set({
         error: err.message ?? "Error inesperado",

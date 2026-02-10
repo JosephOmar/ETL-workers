@@ -5,9 +5,12 @@ import { CopyImageButton } from "@/components/utils/CopyImagenButton";
 type Props = {
   data: THTHighIntervalSupervisor[];
   loading: boolean;
+  team: string;
+  interval: string;
+  zone: string;
 };
 
-export const THTHighSupervisorsTable = ({ data, loading }: Props) => {
+export const THTHighSupervisorsTable = ({ data, loading, team, interval, zone }: Props) => {
   const [sort, setSort] = useState<"asc" | "desc">("desc");
 
   const sorted = useMemo(() => {
@@ -25,6 +28,9 @@ export const THTHighSupervisorsTable = ({ data, loading }: Props) => {
         <h3 className="font-bold mb-2">📌 THT Alto por Supervisor</h3>
         <table className="w-full border">
           <thead>
+            <tr>
+              <th colSpan={3}>{team} - {interval} {zone}</th>
+            </tr>
             <tr>
               <th>Supervisor</th>
               <th>Coordinator</th>

@@ -13,13 +13,13 @@ interface SlaBreachedReportState {
   loading: boolean;
   error: string | null;
 
-  dateFrom: string;
-  dateTo: string;
+  zone: "PE" | "ES";
+  date: string;
   teamName?: string;
   coordinator?: string;
 
-  setDateFrom: (date: string) => void;
-  setDateTo: (date: string) => void;
+  setZone: (zone: "PE" | "ES") => void;
+  setDate: (date: string) => void
   setTeamName: (name?: string) => void;
   setCoordinator: (name?: string) => void;
 
@@ -33,14 +33,14 @@ export const useSlaBreachedReportStore = create<SlaBreachedReportState>(
     loading: false,
     error: null,
 
-    dateFrom: new Date().toISOString().slice(0, 10),
-    dateTo: new Date().toISOString().slice(0, 10),
+    date: new Date().toISOString().slice(0, 10),
+    zone: "PE",
 
     teamName: undefined,
     coordinator: undefined,
 
-    setDateFrom: (date) => set({ dateFrom: date }),
-    setDateTo: (date) => set({ dateTo: date }),
+    setDate: (date) => set({ date: date }),
+    setZone: (zone) => set({ zone }),
     setTeamName: (name) => set({ teamName: name }),
     setCoordinator: (name) => set({ coordinator: name }),
 
@@ -49,7 +49,7 @@ export const useSlaBreachedReportStore = create<SlaBreachedReportState>(
     fetchReport: async (forceRefresh = false, silent = false) => {
       if (!silent) set({ loading: true, error: null });
 
-      const { dateFrom, dateTo, teamName, coordinator } = get();
+      const { date, zone, teamName, coordinator } = get();
       const cacheKey = "sla_breached_last";
 
       try {
@@ -64,10 +64,7 @@ export const useSlaBreachedReportStore = create<SlaBreachedReportState>(
           }
         }
 
-        const params = new URLSearchParams({
-          date_from: dateFrom,
-          date_to: dateTo,
-        });
+        const params = new URLSearchParams({zone, date});
 
         if (teamName) params.append("team_name", teamName);
         if (coordinator) params.append("coordinator", coordinator);
@@ -80,7 +77,10 @@ export const useSlaBreachedReportStore = create<SlaBreachedReportState>(
 
         const data: SlaBreachedReportResponse[] = await res.json();
 
-        await slaBreachedStorage.setItem(cacheKey, data);
+        if (data.length > 0) {
+          await slaBreachedStorage.removeItem(cacheKey);
+          await slaBreachedStorage.setItem(cacheKey, data);
+        }
         set({ report: data, loading: false });
       } catch (err: any) {
         set({ error: err.message ?? "Error inesperado", loading: false });
