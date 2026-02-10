@@ -5,7 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.database.database import get_session
 from app.reports.attendance.reportAttendanceService import build_adherence_report
 from app.reports.attendance.reportAttendanceSchema import AdherenceReportResponse
-from app.reports.sla_breached.schema import SlaBreachedReportResponse
+from app.reports.sla_breached.schema import SlaBreachedResponse
 from app.reports.sla_breached.service import fetch_sla_breached_report
 from app.reports.contact_reason.service import get_contact_reasons
 from app.reports.tht_agents.service import get_tht_high_combined
@@ -41,7 +41,7 @@ async def adherence_report(
 
 @router.get(
     "/sla-breached",
-    response_model=List[SlaBreachedReportResponse],
+    response_model=SlaBreachedResponse,
     summary="SLA breached report by team and date"
 )
 async def get_sla_breached_report_endpoint(
