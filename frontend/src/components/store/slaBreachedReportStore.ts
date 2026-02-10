@@ -9,18 +9,18 @@ export const slaBreachedStorage = localforage.createInstance({
 });
 
 interface SlaBreachedReportState {
-  report: SlaBreachedReportResponse[] | null;
+  report: SlaBreachedReportResponse | null;
   loading: boolean;
   error: string | null;
 
   zone: "PE" | "ES";
   date: string;
-  teamName?: string;
+  team?: string;
   coordinator?: string;
 
   setZone: (zone: "PE" | "ES") => void;
-  setDate: (date: string) => void
-  setTeamName: (name?: string) => void;
+  setDate: (date: string) => void;
+  setTeam: (name?: string) => void;
   setCoordinator: (name?: string) => void;
 
   fetchReport: (forceRefresh?: boolean, silent?: boolean) => Promise<void>;
@@ -36,12 +36,12 @@ export const useSlaBreachedReportStore = create<SlaBreachedReportState>(
     date: new Date().toISOString().slice(0, 10),
     zone: "PE",
 
-    teamName: undefined,
+    team: "Customer Tier1",
     coordinator: undefined,
 
-    setDate: (date) => set({ date: date }),
+    setDate: (date) => set({ date }),
     setZone: (zone) => set({ zone }),
-    setTeamName: (name) => set({ teamName: name }),
+    setTeam: (name) => set({ team: name }),
     setCoordinator: (name) => set({ coordinator: name }),
 
     clearReport: () => set({ report: null }),
@@ -49,24 +49,22 @@ export const useSlaBreachedReportStore = create<SlaBreachedReportState>(
     fetchReport: async (forceRefresh = false, silent = false) => {
       if (!silent) set({ loading: true, error: null });
 
-      const { date, zone, teamName, coordinator } = get();
-      const cacheKey = "sla_breached_last";
+      const { date, zone, team, coordinator } = get();
+      const cacheKey = `sla_breached_${zone}_${date}`;
 
       try {
         if (!forceRefresh) {
           const cached =
-            await slaBreachedStorage.getItem<SlaBreachedReportResponse[]>(cacheKey);
+            await slaBreachedStorage.getItem<SlaBreachedReportResponse>(cacheKey);
 
           if (cached) {
-            set({ report: cached });
-            if (!silent) set({ loading: false });
+            set({ report: cached, loading: false });
             return;
           }
         }
 
-        const params = new URLSearchParams({zone, date});
-
-        if (teamName) params.append("team_name", teamName);
+        const params = new URLSearchParams({ zone, date });
+        if (team) params.append("team_name", team);
         if (coordinator) params.append("coordinator", coordinator);
 
         const res = await fetch(
@@ -75,17 +73,16 @@ export const useSlaBreachedReportStore = create<SlaBreachedReportState>(
 
         if (!res.ok) throw new Error(`Error ${res.status}`);
 
-        const data: SlaBreachedReportResponse[] = await res.json();
+        const data: SlaBreachedReportResponse = await res.json();
 
-        if (data.length > 0) {
-          await slaBreachedStorage.removeItem(cacheKey);
-          await slaBreachedStorage.setItem(cacheKey, data);
-        }
+        await slaBreachedStorage.setItem(cacheKey, data);
         set({ report: data, loading: false });
       } catch (err: any) {
-        set({ error: err.message ?? "Error inesperado", loading: false });
+        set({
+          error: err.message ?? "Error inesperado",
+          loading: false,
+        });
       }
     },
   })
 );
-

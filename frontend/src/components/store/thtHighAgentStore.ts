@@ -38,10 +38,12 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
   clearReport: () => set({ report: null }),
 
   fetchReport: async (forceRefresh = false, silent = false) => {
-    if (!silent) set({ loading: true, error: null });
-
     const { zone, date } = get();
-    const cacheKey = "tht_high_latest";
+    const cacheKey = `tht_high_${zone}_${date}`;
+
+    if (!silent) {
+      set({ loading: true, error: null, report: null });
+    }
 
     try {
       if (!forceRefresh) {
@@ -65,7 +67,6 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
       const data: THTHighResponse = await res.json();
 
       if (data.intervals?.length > 0) {
-        await thtHighAgentStorage.removeItem(cacheKey);
         await thtHighAgentStorage.setItem(cacheKey, data);
       }
 
@@ -74,7 +75,10 @@ export const useTHTHighAgentStore = create<THTHighAgentState>((set, get) => ({
       set({
         error: err.message ?? "Error inesperado",
         loading: false,
+        report: null,
       });
     }
   },
+
+
 }));

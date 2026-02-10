@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useTHTHighAgentStore } from "@/components/store/thtHighAgentStore";
-import { THTHighAgentsTable } from "./THTHighAgentsTable";
-import { THTHighSupervisorsTable } from "./THTHighSupervisorsTable";
-import { UploadTHTHighAgent } from "./UploadTHTHighAgent";
+import { useSlaBreachedReportStore } from "@/components/store/slaBreachedReportStore";
+import { SlaBreachedMainTable } from "./SlaBreachedMainTable";
+import { SlaBreachedAgentsTable } from "./SlaBreachedAgentsTable";
+import { SlaBreachedSupervisorsTable } from "./SlaBreachedSupervisorsTable";
 
 const HOURS = Array.from({ length: 24 }, (_, i) =>
   `${String(i).padStart(2, "0")}:00`
 );
 
 const TEAMS = [
-  "Customer Live",
-  "Customer No Live",
+  "Customer Tier1",
   "Rider Tier1",
   "Vendor Chat",
   "Vendor Call",
@@ -20,13 +19,20 @@ const TEAMS = [
 
 type Zone = "PE" | "ES";
 
-export const THTHighView = () => {
-  const { report, fetchReport, loading, zone, setZone, date, setDate } =
-    useTHTHighAgentStore();
+export const SlaBreachedView = () => {
+  const {
+    report,
+    fetchReport,
+    loading,
+    zone,
+    setZone,
+    date,
+    setDate,
+  } = useSlaBreachedReportStore();
 
   const [hour, setHour] = useState("");
   const [team, setTeam] = useState("");
-
+  console.log(report)
   useEffect(() => {
     fetchReport(false, false);
   }, [zone, date]);
@@ -71,8 +77,6 @@ export const THTHighView = () => {
           <option value="ES">España</option>
         </select>
 
-        <UploadTHTHighAgent />
-
         <button
           onClick={() => fetchReport(true)}
           disabled={loading}
@@ -82,9 +86,19 @@ export const THTHighView = () => {
         </button>
       </div>
 
+      {/* Tabla principal */}
+      {/* {report && (
+        <SlaBreachedMainTable
+          intervals={report.intervals}
+          zone={zone}
+          loading={loading}
+        />
+      )} */}
+
+      {/* Tablas de detalle */}
       {selectedInterval && (
         <>
-          <THTHighSupervisorsTable
+          <SlaBreachedSupervisorsTable
             data={selectedInterval.supervisors}
             loading={loading}
             interval={hour}
@@ -92,7 +106,7 @@ export const THTHighView = () => {
             team={team}
           />
 
-          <THTHighAgentsTable
+          <SlaBreachedAgentsTable
             data={selectedInterval.agents}
             loading={loading}
             interval={hour}
