@@ -9,11 +9,15 @@ from zoneinfo import ZoneInfo
 peru_tz = ZoneInfo("America/Lima")
 
 async def get_sla_breached_report(
-    session: AsyncSession
+    session: AsyncSession,
+    zone: str,
+    date_value: date,
 ):
-    today_pe = datetime.now(peru_tz).date()
-    from_date = today_pe - timedelta(days=5)
-
+    date_column = (
+        SlaBreached.date_pe
+        if zone == "PE"
+        else SlaBreached.date_es
+    )
     stmt = (
         select(
             Worker.name.label("agent"),
@@ -34,15 +38,12 @@ async def get_sla_breached_report(
             Worker.api_email == SlaBreached.api_email,
             isouter=True
         )
-        .where(
-            SlaBreached.date_pe.between(from_date, today_pe)
-        )
+        .where(date_column == date_value)
         .order_by(
             Worker.supervisor.asc(),
             SlaBreached.date_pe.desc(),
             SlaBreached.interval_pe
         )
     )
-
     result = await session.exec(stmt)
     return result.all()

@@ -45,9 +45,11 @@ async def adherence_report(
     summary="SLA breached report by team and date"
 )
 async def get_sla_breached_report_endpoint(
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+    zone: Literal["PE", "ES"] = Query(...),
+    date: date = Query(...),
 ):
-    return await fetch_sla_breached_report(session)
+    return await fetch_sla_breached_report(session, zone, date)
 
 @router.get("/contact-reasons")
 async def contact_reasons(
@@ -63,9 +65,4 @@ async def tht_high(
     date: date = Query(...),
     session: AsyncSession = Depends(get_session),
 ):
-    return await get_tht_high_combined(
-        session=session,
-        zone=zone,
-        date_value=date,
-    )
-
+    return await get_tht_high_combined(session, zone, date)

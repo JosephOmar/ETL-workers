@@ -149,7 +149,7 @@ async def get_tht_high_combined(
         })
 
     if meta["date_pe"] is None:
-      meta["date_pe"] = date_value
+        meta["date_pe"] = date_value
 
     if meta["date_es"] is None:
         meta["date_es"] = date_value
