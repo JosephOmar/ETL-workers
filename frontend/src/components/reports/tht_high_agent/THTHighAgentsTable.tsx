@@ -31,7 +31,7 @@ export const THTHighAgentsTable = ({ data, loading, interval, team, zone }: Prop
             <tr>
               <th colSpan={3}>{team} - {interval} {zone}</th>
             </tr>
-            <tr>
+            <tr className="bg-gray-200">
               <th>Agente</th>
               <th>Supervisor</th>
               <th>Coordinator</th>

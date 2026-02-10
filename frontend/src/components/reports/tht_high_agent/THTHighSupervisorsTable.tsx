@@ -31,7 +31,7 @@ export const THTHighSupervisorsTable = ({ data, loading, team, interval, zone }:
             <tr>
               <th colSpan={3}>{team} - {interval} {zone}</th>
             </tr>
-            <tr>
+            <tr className="bg-gray-200">
               <th>Supervisor</th>
               <th>Coordinator</th>
               <th onClick={() => setSort(sort === "asc" ? "desc" : "asc")}>

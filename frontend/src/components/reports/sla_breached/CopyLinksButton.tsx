@@ -12,10 +12,10 @@ export const CopyLinksButton = ({ links }: Props) => {
   return (
     <button
       onClick={() => copyLinksToClipboard(links)}
-      className="px-2 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300"
+      className="px-2 py-1 text-xs bg-red-400 rounded hover:bg-red-600 text-white"
       title="Copiar links"
     >
-      📋 Copiar ({links.length})
+      Links
     </button>
   );
 };

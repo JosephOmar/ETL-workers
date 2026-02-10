@@ -5,6 +5,7 @@ import { useSlaBreachedReportStore } from "@/components/store/slaBreachedReportS
 import { SlaBreachedMainTable } from "./SlaBreachedMainTable";
 import { SlaBreachedAgentsTable } from "./SlaBreachedAgentsTable";
 import { SlaBreachedSupervisorsTable } from "./SlaBreachedSupervisorsTable";
+import { UploadSlaBreachedButton } from "./UploadSlaBreachedButton";
 
 const HOURS = Array.from({ length: 24 }, (_, i) =>
   `${String(i).padStart(2, "0")}:00`
@@ -76,7 +77,7 @@ export const SlaBreachedView = () => {
           <option value="PE">Perú</option>
           <option value="ES">España</option>
         </select>
-
+        <UploadSlaBreachedButton onAfterUpload={() => fetchReport(true)}/>
         <button
           onClick={() => fetchReport(true)}
           disabled={loading}
