@@ -45,12 +45,13 @@ export const CapacityProcessor = () => {
       results.push({
         key: "customer",
         label: "Customer Tier1",
-        agents: calculateCustomerTier1Agents(
-          customerLive.agents,
-          customerNonLive.agents,
-          dedicated.live,
-          dedicated.nonLive
-        ),
+        agents: customerLive.agents,
+        // agents: calculateCustomerTier1Agents(
+        //   customerLive.agents,
+        //   customerNonLive.agents,
+        //   dedicated.live,
+        //   dedicated.nonLive
+        // ),
         tickets: customerLive.tickets + customerNonLive.tickets,
         backlog: customerLive.backlog + customerNonLive.backlog,
       });
@@ -182,13 +183,13 @@ export const CapacityProcessor = () => {
         onChange={e => setQueuesInput(e.target.value)}
       />
 
-      <textarea
+      {/* <textarea
         className="w-full border p-2"
         rows={6}
         placeholder="Pega agentes"
         value={agentsInput}
         onChange={e => setAgentsInput(e.target.value)}
-      />
+      /> */}
       <button
             className="border px-4 py-2 text-xs font-bold"
             onClick={cleanInputs}
