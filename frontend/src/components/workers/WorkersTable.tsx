@@ -25,6 +25,8 @@ import { copyWorkersInPersonAttendance } from "./components/buttonsCopy/copyWork
 import { copyWorkersPilotFormat } from "./components/buttonsCopy/copyWorkersPilotFormat";
 import { getEvaluationDateTime } from "./components/utils/helpersWorkersTableColumns";
 import { copyWorkerUrlApi } from "./components/buttonsCopy/copyWorkersUrlApi";
+import { copyWorkersEmailAndTL } from "./components/buttonsCopy/copyWorkersEmailAndTL";
+import WorkersStatusFilter from "./components/filters/WorkersStatusFilter";
 
 const WorkersTable: React.FC = () => {
   const loading = useWorkersStore((s) => s.loading);
@@ -72,6 +74,7 @@ const WorkersTable: React.FC = () => {
         </div>
         <div className="flex flex-col gap-4">
           <WorkersRoleFilter />
+          <WorkersStatusFilter />
           <WorkersAdherenceFilter />
           <WorkersProductiveFilter />
         </div>
@@ -95,6 +98,9 @@ const WorkersTable: React.FC = () => {
         </Button> */}
         <Button className="btn-grad text-black" onClick={() => copyWorkerUrlApi(workers)}>
           Copy Url
+        </Button>
+        <Button className="btn-grad text-black" onClick={() => copyWorkersEmailAndTL(workers)}>
+          Copy Emails
         </Button>
       </div>
       <table className=" min-w-full bg-white shadow-md rounded-lg overflow-hidden">

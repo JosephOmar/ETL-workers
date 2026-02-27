@@ -30,6 +30,7 @@ interface WorkersState {
   filterRole: string[];
   filterAdherenceBelow: boolean;
   filterProductive: boolean;
+  filterStatus: string[];
 
   fetchWorkers: (forceRefresh?: boolean) => Promise<void>;
 
@@ -44,6 +45,7 @@ interface WorkersState {
   setFilterRole: (roles: string[]) => void;
   setFilterAdherenceBelow: (value: boolean) => void;
   setFilterProductive: (value: boolean) => void;
+  setFilterStatus: (status: string[]) => void;
 
   clearTimeRange: () => void;
   resetFilters: () => void;
@@ -65,6 +67,7 @@ export const useWorkersStore = create<WorkersState>((set, get) => ({
   filterRole: [],
   filterAdherenceBelow: false,
   filterProductive: false,
+  filterStatus: [],
 
   setFilterDate: (date) => {
     date == "Select Date" ? date = "" : ""
@@ -137,6 +140,16 @@ export const useWorkersStore = create<WorkersState>((set, get) => ({
       filterAdherenceBelow: false,
       filterProductive: false,
     }),
+
+  setFilterStatus: (status) =>  {
+
+    if (status.length === 0) {
+      set({ filterStatus: []})
+      return;
+    }
+
+    set({ filterStatus: status})
+  },
 
   fetchWorkers: async (forceRefresh = false) => {
     set({ loading: true, error: null });

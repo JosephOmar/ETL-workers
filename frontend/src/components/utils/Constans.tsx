@@ -30,3 +30,8 @@ export const ROLE_OPTIONS = [
   { label: "Agent", value: "Agent"},
   { label: "Supervisor", value: "Supervisor"}
 ]
+
+export const STATUS_OPTIONS = [
+  { label: "Active", value: "activo"},
+  { label: "Inactive", value: "inactivo"}
+]

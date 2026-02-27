@@ -23,7 +23,7 @@ export function buildCapacityText(
   }
 
   const available = calculateAvailableAgents(team, agents, tickets);
-  const RealAvailable = available > 10 ? 10 : available;
+  const RealAvailable = available > 30 ? 30 : available;
 
   return (
     `Capacidad: ${team}\n\n` +

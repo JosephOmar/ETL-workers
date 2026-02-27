@@ -36,6 +36,13 @@ export const filterByRole =
     return roles.includes(worker.role?.name);
 };
 
+export const filterByStatus =
+  (status: string[]) =>
+  (worker: Worker): boolean => {
+    if (status.length === 0) return true;
+    return status.includes(worker.status?.name.toLowerCase());
+};
+
 export const filterByContract =
   (contracts: string[]) =>
   (worker: Worker): boolean => {

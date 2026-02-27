@@ -1,5 +1,5 @@
 import { useWorkersStore } from "@/components/store/workerStore";
-import { filterByDate, filterByAttendance, filterByContract, filterByTeam, filterByTimeRange, filterByRole, filterByAdherence, filterByProductive } from "../filters/WorkerFilters";
+import { filterByDate, filterByAttendance, filterByContract, filterByTeam, filterByTimeRange, filterByRole, filterByAdherence, filterByProductive, filterByStatus } from "../filters/WorkerFilters";
 import { filterByBulkSearch } from "../search/filterByBulkSearch";
 import { useMemo } from "react";
 import { getEvaluationDateTime } from "./helpersWorkersTableColumns";
@@ -20,6 +20,7 @@ export const useFilteredWorkers = () => {
     searchText,
     searchField,
     filterTimeRange,
+    filterStatus,
   } = useWorkersStore();
 
   const evaluationDateTime = useMemo(
@@ -38,6 +39,7 @@ export const useFilteredWorkers = () => {
       .filter(filterByAttendance(filterAttendance, filterDate, evaluationDateTime, filterZone))
       .filter(filterByBulkSearch(searchText, searchField))
       .filter((w) => !filterAdherenceBelow || filterByAdherence(90, filterDate, evaluationDateTime, filterZone)(w))
+      .filter(filterByStatus(filterStatus))
       .sort(sortByBulkOrder(searchText, searchField));
       return workersFiltered
   }, [
@@ -53,5 +55,6 @@ export const useFilteredWorkers = () => {
     filterAttendance,
     searchText,
     searchField,
+    filterStatus,
   ]);
 };
