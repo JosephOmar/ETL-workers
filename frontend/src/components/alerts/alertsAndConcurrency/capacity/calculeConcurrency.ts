@@ -24,13 +24,13 @@ export function buildCapacityText(
 
   const available = calculateAvailableAgents(team, agents, tickets);
   const RealAvailable = available > 30 ? 30 : available;
-
+  const textRealAvailable = available === 0 ? `❌ Sin agentes disponibles para refuerzo` : `Ag. Disponibles: ${RealAvailable} para refuerzo`
   return (
     `Capacidad: ${team}\n\n` +
     `Total de Agentes: ${agents} Agentes.\n` +
     `Tickets: ${tickets} Tickets en gestión\n` +
     `Concurrencia: ${concurrency}\n\n` +
-    `Ag. Disponibles: ${RealAvailable} para refuerzo`
+    textRealAvailable
   );
 }
 
@@ -48,7 +48,7 @@ export function calculateAvailableAgents(
   tickets: number
 ): number {
   if (agents === 0) return 0;
-
+  if (agents <= 6) return 1;
   const maxAllowed = getMaxConcurrency(team, agents);
 
   const neededAgents = Math.ceil(tickets / maxAllowed);
