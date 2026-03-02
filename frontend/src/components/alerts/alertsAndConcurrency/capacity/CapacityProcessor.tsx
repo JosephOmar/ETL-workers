@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { parseQueues, countDedicatedAgents, calculateCustomerTier1Agents } from "./parser";
+import { parseQueues, countDedicatedAgents, calculateCustomerTier1Agents, countRiderOrVendorAgents } from "./parser";
 import { buildCapacityText, buildAvailabilityLine } from "./calculeConcurrency";
 import { calculateAvailableAgents } from "./calculeConcurrency";
 import { ChartWrapper } from "@/components/utils/ChartCopyButton";
@@ -19,11 +19,21 @@ const TEAM_ORDER = [
 export const CapacityProcessor = () => {
   const [queuesInput, setQueuesInput] = useState("");
   const [agentsInput, setAgentsInput] = useState("");
+  const [agentsRiderInput, setAgentsRiderInput] = useState("");
+  const [agentsVendorInput, setAgentsVendorInput] = useState("");
 
   const queues = useMemo(() => parseQueues(queuesInput), [queuesInput]);
   const dedicated = useMemo(
     () => countDedicatedAgents(agentsInput),
     [agentsInput]
+  );
+  const dedicatedRider = useMemo(
+    () => Number(countRiderOrVendorAgents(agentsRiderInput) ?? 0),
+    [agentsRiderInput]
+  );
+  const dedicatedVendor = useMemo(
+    () => Number(countRiderOrVendorAgents(agentsVendorInput) ?? 0),
+    [agentsVendorInput]
   );
 
   const customerLive = queues.find(q => q.team === "Customer Live");
@@ -35,6 +45,7 @@ export const CapacityProcessor = () => {
   const cleanInputs = () => {
     setQueuesInput("")
     setAgentsInput("")
+    setAgentsRiderInput("")
   }
 
   const tier1Results = useMemo(() => {
@@ -62,7 +73,8 @@ export const CapacityProcessor = () => {
       results.push({
         key: "rider",
         label: "Rider Tier1",
-        agents: riderTier1.agents,
+        // agents: riderTier1.agents,
+        agents: dedicatedRider,
         tickets: riderTier1.tickets,
         backlog: riderTier1.backlog,
       });
@@ -73,7 +85,8 @@ export const CapacityProcessor = () => {
       results.push({
         key: "vendor",
         label: "Vendor Chat",
-        agents: vendorTier1.agents,
+        // agents: vendorTier1.agents,
+        agents: dedicatedVendor,
         tickets: vendorTier1.tickets,
         backlog: vendorTier1.backlog,
       });
@@ -86,6 +99,8 @@ export const CapacityProcessor = () => {
     riderTier1,
     vendorTier1,
     dedicated,
+    dedicatedRider,
+    dedicatedVendor
   ]);
 
   const tableRows = useMemo(() => {
@@ -183,13 +198,20 @@ export const CapacityProcessor = () => {
         onChange={e => setQueuesInput(e.target.value)}
       />
 
-      {/* <textarea
+      <textarea
         className="w-full border p-2"
         rows={6}
-        placeholder="Pega agentes"
-        value={agentsInput}
-        onChange={e => setAgentsInput(e.target.value)}
-      /> */}
+        placeholder="Pega agentes Rider"
+        value={agentsRiderInput}
+        onChange={e => setAgentsRiderInput(e.target.value)}
+      />
+      <textarea
+        className="w-full border p-2"
+        rows={6}
+        placeholder="Pega agentes Vendor"
+        value={agentsVendorInput}
+        onChange={e => setAgentsVendorInput(e.target.value)}
+      />
       <button
             className="border px-4 py-2 text-xs font-bold"
             onClick={cleanInputs}

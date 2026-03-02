@@ -37,6 +37,12 @@ export function countDedicatedAgents(input: string) {
   return { live, nonLive };
 }
 
+export function countRiderOrVendorAgents(input: string) {
+  const agents = (input.match(/Default/g) || []).length;
+  console.log(agents)
+  return agents
+}
+
 export function calculateCustomerTier1Agents(
   liveAgents: number,
   nonLiveAgents: number,
