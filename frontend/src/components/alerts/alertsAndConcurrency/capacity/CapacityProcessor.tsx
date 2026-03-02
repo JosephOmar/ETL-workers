@@ -198,7 +198,7 @@ export const CapacityProcessor = () => {
         onChange={e => setQueuesInput(e.target.value)}
       />
 
-      <textarea
+      {/* <textarea
         className="w-full border p-2"
         rows={6}
         placeholder="Pega agentes Rider"
@@ -211,7 +211,7 @@ export const CapacityProcessor = () => {
         placeholder="Pega agentes Vendor"
         value={agentsVendorInput}
         onChange={e => setAgentsVendorInput(e.target.value)}
-      />
+      /> */}
       <button
             className="border px-4 py-2 text-xs font-bold"
             onClick={cleanInputs}
