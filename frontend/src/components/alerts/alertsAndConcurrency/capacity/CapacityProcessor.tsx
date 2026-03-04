@@ -73,8 +73,8 @@ export const CapacityProcessor = () => {
       results.push({
         key: "rider",
         label: "Rider Tier1",
-        // agents: riderTier1.agents,
-        agents: dedicatedRider,
+        agents: riderTier1.agents,
+        // agents: dedicatedRider,
         tickets: riderTier1.tickets,
         backlog: riderTier1.backlog,
       });
@@ -85,8 +85,8 @@ export const CapacityProcessor = () => {
       results.push({
         key: "vendor",
         label: "Vendor Chat",
-        // agents: vendorTier1.agents,
-        agents: dedicatedVendor,
+        agents: vendorTier1.agents,
+        // agents: dedicatedVendor,
         tickets: vendorTier1.tickets,
         backlog: vendorTier1.backlog,
       });
@@ -99,8 +99,8 @@ export const CapacityProcessor = () => {
     riderTier1,
     vendorTier1,
     dedicated,
-    dedicatedRider,
-    dedicatedVendor
+    // dedicatedRider,
+    // dedicatedVendor
   ]);
 
   const tableRows = useMemo(() => {
