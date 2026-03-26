@@ -41,6 +41,7 @@ async def process_and_persist_workers(
         df["contract_type_id"] = df["contract_type"].map(contract_map)
 
         df = df.drop(columns=["role","status","campaign","team","work_type","contract_type"])
+        df = df.drop_duplicates(subset=["document"], keep="last")
 
         workers_data = df.to_dict(orient="records")
 
