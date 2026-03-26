@@ -28,7 +28,9 @@ async def contacts_with_ccr_service(
             required_slots=list(CONTACTS_MAPPING.values()),
             post_process=clean_contact_reason
         )
-
+        print(df_contacts_received)
+        print(df_contact_reason)
+        print(df_high_tht_by_agent)
         # 2️⃣ Normalización
         df_contacts_received = normalize_for_db(df_contacts_received)
         df_contact_reason = normalize_for_db(df_contact_reason)

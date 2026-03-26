@@ -13,7 +13,7 @@ async def upload_schedules(
     files: List[UploadFile] = File(...),
     session: AsyncSession = Depends(get_session)
 ):
-
+    print(files)
     if not files or len(files) == 0:
         raise HTTPException(
             status_code=400,

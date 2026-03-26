@@ -20,7 +20,7 @@ async def process_and_persist_sla_breached(
             required_slots=list(SLA_MAPPING.values()),
             post_process=clean_sla_breached
         )
-
+        print(df)
         df = normalize_for_db(df)
 
         sla_data = df.to_dict(orient="records")
