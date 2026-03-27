@@ -67,7 +67,9 @@ async def get_tht_high_combined(
             Worker,
             Worker.api_email == THTHighByAgent.api_email
         )
-        .where(*conditions)
+        .where(*conditions,
+               Worker.name.is_not(None)
+        )
     )
 
     agents_rows = (await session.exec(stmt_agents)).all()
@@ -95,7 +97,9 @@ async def get_tht_high_combined(
             Worker,
             Worker.api_email == THTHighByAgent.api_email
         )
-        .where(*conditions)
+        .where(*conditions,
+               Worker.name.is_not(None)
+        )
         .group_by(
             ContactsReceived.date_pe,
             ContactsReceived.date_es,
