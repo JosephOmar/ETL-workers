@@ -6,7 +6,7 @@ from sqlalchemy import func
 
 from app.models.contact_reason import ContactsReceived, THTHighByAgent
 from app.models.worker import Worker
-
+from app.utils.format_intervals import format_interval_label
 
 async def get_tht_high_combined(
     session: AsyncSession,
@@ -133,7 +133,7 @@ async def get_tht_high_combined(
     if is_range:
         teams_map = defaultdict(lambda: {
             "team": None,
-            "interval": f"{start_interval or '00:00'} - {end_interval or '23:59'}",
+            "interval": format_interval_label(start_interval, end_interval),
             "agents": defaultdict(lambda: {
                 "api_email": None,
                 "name": None,

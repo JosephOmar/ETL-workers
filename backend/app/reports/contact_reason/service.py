@@ -5,6 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy import func
 
 from app.models.contact_reason import ContactsReceived, ContactsReason
+from app.utils.format_intervals import format_interval_label
 
 
 async def get_contact_reasons(
@@ -89,7 +90,7 @@ async def get_contact_reasons(
     # =====================
     if is_range:
         teams_map = defaultdict(lambda: {
-            "interval": f"{start_interval or '00:00'} - {end_interval or '23:59'}",
+            "interval": format_interval_label(start_interval, end_interval),
             "team": None,
             "reasons": defaultdict(int),
             "total": 0,

@@ -7,6 +7,7 @@ from typing import Optional
 
 from app.models.sla_breached import SlaBreached
 from app.models.worker import Worker
+from app.utils.format_intervals import format_interval_label
 
 peru_tz = ZoneInfo("America/Lima")
 
@@ -93,7 +94,7 @@ async def get_sla_breached_report(
             # 👉 Agrupar SOLO por team (acumulado)
             key = r.team
 
-            interval_label = f"{start_interval or '00:00'} - {end_interval or '23:59'}"
+            interval_label = format_interval_label(start_interval, end_interval)
         else:
             # 👉 Agrupar por intervalo (modo normal)
             interval_value = (
