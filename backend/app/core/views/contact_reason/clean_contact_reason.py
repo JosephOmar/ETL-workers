@@ -59,7 +59,7 @@ def clean_contact_reason(data: pd.DataFrame):
     # ─────────────────────
     data["resolution_time"] = pd.to_numeric(data["resolution_time"], errors="coerce")
     df_high_tht_by_agent = (
-        data[data['resolution_time'] > 600]
+        data[data['resolution_time'] > 1200]
         .groupby(
             ['date_pe', 'interval_pe', 'date_es', 'interval_es', 'team', 'agent_email'],
             as_index=False
@@ -70,5 +70,7 @@ def clean_contact_reason(data: pd.DataFrame):
             'agent_email': 'api_email'
         })
     )
-
+    print('xd')
+    print(df_high_tht_by_agent)
+    print('xd')
     return df_contacts_received, df_contact_reason, df_high_tht_by_agent

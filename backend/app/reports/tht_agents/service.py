@@ -23,13 +23,13 @@ async def get_tht_high_combined(
         if zone == "PE"
         else ContactsReceived.date_es
     )
-
+    print(date_column)
     interval_column = (
         ContactsReceived.interval_pe
         if zone == "PE"
         else ContactsReceived.interval_es
     )
-
+    print(interval_column)
     # =====================
     # CONDICIONES
     # =====================
@@ -71,9 +71,9 @@ async def get_tht_high_combined(
                Worker.name.is_not(None)
         )
     )
-
+    print(stmt_agents)
     agents_rows = (await session.exec(stmt_agents)).all()
-
+    print(agents_rows)
     # =====================
     # SUPERVISORES
     # =====================
@@ -242,7 +242,7 @@ async def get_tht_high_combined(
 
     if meta["date_es"] is None:
         meta["date_es"] = date_value
-
+    print({"intervals": list(intervals_map.values())})
     return {
         "meta": meta,
         "intervals": list(intervals_map.values())

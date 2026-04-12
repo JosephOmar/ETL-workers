@@ -15,6 +15,7 @@ async def process_and_persist_schedules(
     year: int | None = None,
 ) -> dict:
     try:
+
         df = await handle_file_upload_generic(
             files=files,
             validator=validate_excel_schedule,
@@ -22,6 +23,7 @@ async def process_and_persist_schedules(
             required_slots=list(SCHEDULE_MAPPING.values()),
             post_process=merge_schedule,
         )
+
         df = normalize_for_db(df)
         schedules_data = df.to_dict(orient="records")
         result = await bulk_upsert_schedules_on_conflict(session, schedules_data)

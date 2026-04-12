@@ -58,13 +58,18 @@ def merge_schedule_concentrix(df_conc: pd.DataFrame, df_ppp: pd.DataFrame) -> pd
     return df
 
 def merge_schedule(schedule_people: pd.DataFrame, schedule_ppp: pd.DataFrame, people_obs: pd.DataFrame, schedule_ubycall: pd.DataFrame) -> pd.DataFrame :
+
     df_concentrix = clean_schedule_concentrix(schedule_people, people_obs)
 
     df_ubycall = clean_schedule_ubycall(schedule_ubycall)
 
     df_ppp = clean_schedule_ppp(schedule_ppp)
+
     df_concentrix = merge_schedule_concentrix(df_concentrix, df_ppp)
+
     df_final = pd.concat([df_concentrix, df_ubycall])
+
     df_final = clean_document(df_final)
+
 
     return df_final
