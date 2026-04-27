@@ -2,6 +2,7 @@ import pandas as pd
 
 QUEUE_NAMES = {
     'VS-case-inbox-spa-ES-tier2': 'Vendor Tier2',
+    'VS-case-inbox-spa-ES-disputes': 'Vendor Tier2',
     'CS-case-inbox-spa-ES-tier2': 'Customer Tier2',
     'RS-case-inbox-spa-ES-tier2': 'Rider Tier2',
     'RS-chat-spa-ES-tier1': 'Rider Tier1',
