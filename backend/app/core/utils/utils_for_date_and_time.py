@@ -46,12 +46,32 @@ def compute_break_date(row, start_col, end_col):
 
     return bs_date, be_date
 
-def calculate_shift_minutes(start: time | None, end: time | None) -> int:
+def calculate_shift_minutes(start, end) -> int:
+
     if start is None or end is None or pd.isna(start) or pd.isna(end):
         return 0
 
+    # convertir timedelta -> time
+    if isinstance(start, timedelta):
+        total_seconds = int(start.total_seconds())
+        start = time(
+            (total_seconds // 3600) % 24,
+            (total_seconds % 3600) // 60,
+            total_seconds % 60
+        )
+
+    if isinstance(end, timedelta):
+        total_seconds = int(end.total_seconds())
+        end = time(
+            (total_seconds // 3600) % 24,
+            (total_seconds % 3600) // 60,
+            total_seconds % 60
+        )
+
+    # string -> time
     if isinstance(start, str):
         start = datetime.strptime(start, "%H:%M:%S").time()
+
     if isinstance(end, str):
         end = datetime.strptime(end, "%H:%M:%S").time()
 
