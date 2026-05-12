@@ -103,15 +103,15 @@ def generate_workers(
 
     # ! MERGE TEAM AND REQUIREMENT ID FROM PPP // MERGE SUPERVISOR FROM MASTER
     df_people_and_ppp = merge_data_for_priority(df_people, df_scheduling_ppp, TEAM, REQUIREMENT_ID)
-    df_people_ppp_and_master = merge_data_for_priority(df_people_and_ppp, df_master_concentrix, SUPERVISOR)
-    df_people_ppp_and_master = merge_data_for_priority(df_people_ppp_and_master, df_master_backup, ROLE)
-    df_people_ppp_and_master = merge_data_for_priority(df_people_ppp_and_master, df_master_supervisor, ROLE)
+    # df_people_ppp_and_master = merge_data_for_priority(df_people_and_ppp, df_master_concentrix, SUPERVISOR)
+    # df_people_ppp_and_master = merge_data_for_priority(df_people_ppp_and_master, df_master_backup, ROLE)
+    # df_people_ppp_and_master = merge_data_for_priority(df_people_ppp_and_master, df_master_supervisor, ROLE)
 
     # ! MERGE AGENTS UBYCALL FROM SCHEDULING AND MASTER
     df_ubycall = merge_worker_ubycall(df_ubycall_master, df_ubycall_scheduling)
 
     # ! CONCAT CX + UBY
-    df_final_worker = pd.concat([df_people_ppp_and_master, df_ubycall])
+    df_final_worker = pd.concat([df_people_and_ppp, df_ubycall])
 
     # ! MERGE CX + UBY WITH API_ID
     df_final_worker = pd.merge(
